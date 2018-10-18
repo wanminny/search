@@ -7,6 +7,9 @@ cli
 /20181013
 search
 cli
+*.zip
+*.log
+
 
 
 
