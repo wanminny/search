@@ -111,8 +111,6 @@ func initParameter() {
 
 	flag.StringVar(&endTime, "end", "", "format as: 2016-01-02,默认当前时间的48h前.")
 
-	//flag.StringVar(&fileName, "f", "", "which file name to find.")
-
 	flag.StringVar(&deviceId, "c", "", "which condition to search.")
 
 	flag.StringVar(&directory, "dir", "", "如果文件不存在需要复制的目录(解压文件)")
@@ -345,35 +343,6 @@ func main() {
 						findTextInFile(dirv+ "/" + util.GetFileName(filenameFullName))
 					}
 				}
-
-				//
-				//os.Exit(1)
-				//
-				//for _, dirv := range dirs {
-				//	dirv := directory + "/" + dirv // 组装成自己想要的目录格式
-				//	log.Println(dirv)
-				//
-				//	dirv = getDestDir()
-				//	log.Println(dirv)
-				//	files, err := ioutil.ReadDir(dirv)
-				//	if err != nil {
-				//		log.Println(err)
-				//		continue
-				//	}
-				//
-				//	for _, v := range files {
-				//		filenameFullName := path.Base(v.Name())
-				//		fullName := dirv + "/" + v.Name()
-				//		ext := path.Ext(filenameFullName)
-				//		log.Println(filenameFullName,ext,fullName,66)
-				//		if ext == extName {
-				//			//先解压文件；
-				//			UnGzipFile(fullName) //xxx.gz
-				//			//log.Println(fullName,util.GetFileName(filenameFullName),99)
-				//			findTextInFile(util.GetFileName(filenameFullName))
-				//		}
-				//	}
-				//}
 			}
 
 		}
@@ -398,101 +367,6 @@ func main() {
 	gzipOK <- struct{}{}
 	go gzipFile()
 	<-end
-
-
-	//for k,v := range dirsMap{
-	//	if !v {
-	//
-	//	}
-	//}
-
-	os.Exit(1)
-
-	f, err := os.Open(fileName)
-	if err != nil {
-		//log.Fatal(err)
-		//文件不存在
-		log.Println(err,"===>去指定目录中去查找.")
-		//如果文件不存在 则复制指定目录的文件过来让后变量素有文件
-		if len(directory) == 0 {
-			usage()
-			log.Fatal("没有指定要查找的目录.")
-		}else{
-			//log.Fatal("需要指定目录！")
-			//直接将制定目录的.gz文件解压到指定文件然后查找处理
-			//遍历所有的目录
-			dirs := make([]string, 0)
-			ts, err := time.Parse(TIMEFORMAT, startTime)
-			if err != nil {
-				log.Fatal("解析开始时间格式错误:", err, startTime)
-			}
-			te, err := time.Parse(TIMEFORMAT, endTime)
-			if err != nil {
-				log.Fatal("解析结束时间格式错误:", err, endTime)
-			}
-			if te.Before(ts) {
-				log.Fatal("日期不合法,结束日期比开始日期还早哦.")
-			}
-			if ts.Equal(te) { // 日期相等
-				dirs = append(dirs, startTime)
-			} else {
-				// 日期大于前者
-				dirs = append(dirs, startTime)
-				//log.Println(dirs)
-				ts = ts.Add(time.Hour * 24)
-				for te.After(ts) || te.Equal(ts){
-					dirs = append(dirs, ts.Format(TIMEFORMAT))
-					ts = ts.Add(time.Hour * 24)
-				}
-			}
-			log.Println(dirs)
-			//os.Exit(1)
-			for _, dirv := range dirs {
-				dirv := directory + "/" + dirv // 组装成自己想要的目录格式
-				log.Println(dirv)
-				files, err := ioutil.ReadDir(dirv)
-				if err != nil {
-					log.Println(err)
-					continue
-				}
-				for _, v := range files {
-					filenameFullName := path.Base(v.Name())
-					fullName := dirv + "/" + v.Name()
-					ext := path.Ext(filenameFullName)
-					log.Println(filenameFullName,ext,fullName,66)
-					if ext == extName {
-						//log.Println(777)
-						//先解压文件；
-						UnGzipFile(fullName) //xxx.gz
-						log.Println(fullName,util.GetFileName(filenameFullName),99)
-						findTextInFile(util.GetFileName(filenameFullName))
-					}
-				}
-			}
-		}
-	}
-
-	reader := bufio.NewReader(f)
-
-	for {
-		line, prefix, err := reader.ReadLine()
-
-		if err != nil {
-			if err == io.EOF {
-				log.Println("处理文件结束了,ok !")
-				//通知可以压缩文件了
-				gzipOK <- struct{}{}
-				go gzipFile()
-				<-end
-				return
-			} else {
-				log.Fatal(line, prefix, err)
-			}
-		}
-		//log.Println(string(line),prefix)
-		timeDeltaAndDeviceIdOK(line)
-	}
-
 }
 
 func findTextInFile(fileName string) {
