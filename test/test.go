@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"strings"
+	"fmt"
+	"path"
 )
 
 var (
@@ -60,17 +62,38 @@ func timeDeltaAndDeviceIdOK(lineLog []byte) bool {
 	return tip
 }
 
+func mkdirs()  {
+
+	//newpath := filepath.Join(".", "copy-dir-tar")
+	//log.Println(newpath)
+	//os.MkdirAll(newpath, 0755)
+
+	err := os.Remove("./copy-dir-tar")
+
+	//err := os.Mkdir("./copy-dir-tar",0755)
+
+	log.Println(err)
+	//os.Mkdir("./copy-file-tar",0755)
+
+}
+
 
 func main()  {
 
 
-	//fullFilename := "/Users/itfanr/Documents/test.txt"
-	//fmt.Println("fullFilename =", fullFilename)
-	//var filenameWithSuffix string
-	//filenameWithSuffix = path.Base(fullFilename) //获取文件名带后缀
-	//fmt.Println("filenameWithSuffix =", filenameWithSuffix)
+	mkdirs()
+
+	os.Exit(1)
+
+	fullFilename := "/Users/itfanr/Documents/test.txt"
+	fmt.Println("fullFilename =", fullFilename)
+	var filenameWithSuffix string
+	filenameWithSuffix = path.Base(fullFilename) //获取文件名带后缀
+	fmt.Println("filenameWithSuffix =", filenameWithSuffix)
 	//
 	//
+	os.Exit(0)
+
 	//
 	//util.Copy("/gopath/src/gobible/logmanager/cli/my/xx.txt","/gopath/src/gobible/logmanager/cli/my/tcp_stdout.log-20181015")
 

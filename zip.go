@@ -11,7 +11,6 @@ import (
 	"bufio"
 	"fmt"
 	"path"
-	"gobible/logmanager/cli/util"
 )
 
 func ZipDir(dir, zipFile string) {
@@ -86,7 +85,7 @@ func UnzipDir(zipFile, dir string) {
 
 
 // gzip 文件 解压缩；
-func UnGzipFile(gzipFile string)  {
+func UnGzipFile(gzipFile string,destDirFile string)  {
 
 	log.Println(111)
 	// file read
@@ -108,7 +107,8 @@ func UnGzipFile(gzipFile string)  {
 
 	//log.Println(3333)
 	// 打开文件
-	fw, err := os.OpenFile("tar/" + util.GetFileName(gzipFile), os.O_CREATE | os.O_WRONLY, 0644/*os.FileMode(h.Mode)*/)
+	//fw, err := os.OpenFile(copyDirTar + "/" + util.GetFileName(gzipFile), os.O_CREATE | os.O_WRONLY, 0644/*os.FileMode(h.Mode)*/)
+	fw, err := os.OpenFile(destDirFile, os.O_CREATE | os.O_WRONLY, 0644/*os.FileMode(h.Mode)*/)
 	if err != nil {
 		panic(err)
 	}
@@ -134,36 +134,6 @@ func UnGzipFile(gzipFile string)  {
 			panic(err)
 		}
 	}
-
-	//// tar read
-	//tr := tar.NewReader(gr)
-	//
-	//// 读取文件
-	//for {
-	//	h, err := tr.Next()
-	//	if err == io.EOF {
-	//		break
-	//	}
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//
-	//	// 显示文件
-	//	fmt.Println(h.Name)
-	//
-	//	// 打开文件
-	//	fw, err := os.OpenFile("tar/" + h.Name, os.O_CREATE | os.O_WRONLY, 0644/*os.FileMode(h.Mode)*/)
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//	defer fw.Close()
-	//
-	//	// 写文件
-	//	_, err = io.Copy(fw, tr)
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//}
 	log.Println(n)
 	log.Println("ok!")
 }

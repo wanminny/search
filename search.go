@@ -56,7 +56,31 @@ var (
 	dirsMap = make(map[string]bool)
 
 	//目标文件夹
-	destDir = "/tar"
+	//destDir = "/tar"
+
+
+	//当前的目录的拷贝目录
+	copyDirTar = "./copy-dir-tar"
+
+	//当前的文件的拷贝目录
+	copyFileTar = "./copy-file-tar"
+
+)
+
+
+type FileInfo struct {
+	//文件名称目录
+	Name string
+	//是否是压缩文件
+	gz bool
+
+	fullName string
+
+	empty bool
+}
+
+var (
+	fileMaps  = make(map[string]FileInfo)
 )
 
 func genarateFile(content []byte) {
@@ -183,6 +207,7 @@ func timeDeltaAndDeviceIdOK(lineLog []byte) bool {
 }
 
 func parameterCheck()  {
+
 	if len(deviceId) == 0 {
 		usage()
 		log.Fatal("缺少查找条件参数")
@@ -195,6 +220,75 @@ func parameterCheck()  {
 		usage()
 		log.Fatal("缺少结束时间参数")
 	}
+
+	if len(directory) == 0 {
+		usage()
+		log.Fatal("没有指定要查找的目录.")
+	}
+
+}
+
+func timeCheckAndStoreDirs()  {
+
+	dirs := make([]string, 0)
+	ts, err := time.Parse(TIMEFORMAT, startTime)
+	if err != nil {
+		log.Fatal("解析开始时间格式错误:", err, startTime)
+	}
+	te, err := time.Parse(TIMEFORMAT, endTime)
+	if err != nil {
+		log.Fatal("解析结束时间格式错误:", err, endTime)
+	}
+	if te.Before(ts) {
+		log.Fatal("日期不合法,结束日期比开始日期还早哦.")
+	}
+	if ts.Equal(te) { // 日期相等
+		dirs = append(dirs, startTime)
+	} else {
+		// 日期大于前者
+		dirs = append(dirs, startTime)
+		//log.Println(dirs)
+		ts = ts.Add(time.Hour * 24)
+		for te.After(ts) || te.Equal(ts){
+			dirs = append(dirs, ts.Format(TIMEFORMAT))
+			ts = ts.Add(time.Hour * 24)
+		}
+	}
+	log.Println(dirs)
+}
+
+func mkdirs()  {
+
+	//先删除 后创建
+	err :=  os.Remove(copyDirTar)
+	if err != nil{
+		log.Println(err)
+	}
+	err =  os.Remove(copyFileTar)
+	if err != nil{
+		log.Println(err)
+	}
+
+	err =os.Mkdir(copyDirTar,0755)
+	if err != nil{
+		log.Println(err)
+	}
+	err = os.Mkdir(copyFileTar,0755)
+	if err != nil{
+		log.Println(err)
+	}
+
+	////最后是否要删除？
+	//err =  os.Remove(copyDirTar)
+	//if err != nil{
+	//	log.Println(err)
+	//}
+	//err =  os.Remove(copyFileTar)
+	//if err != nil{
+	//	log.Println(err)
+	//}
+
+
 }
 
 func getGlobalDirsName()  {
@@ -222,13 +316,21 @@ func getGlobalDirsName()  {
 			ts = ts.Add(time.Hour * 24)
 		}
 	}
+	log.Println(dirs)
 }
 
 
 func getDestDir() string {
 
-	return util.GetCurrentDirectory() + destDir
+	return util.GetCurrentDirectory() + "/"+ copyDirTar
 }
+
+
+func getDestFileDir() string {
+
+	return util.GetCurrentDirectory() +"/"+ copyFileTar[2:] + "/"
+}
+
 
 
 func main() {
@@ -241,129 +343,163 @@ func main() {
 	}
 	parameterCheck()
 	getGlobalDirsName()
+	mkdirs()
 	for _, dirv := range dirs {
-
 		realName := util.GetCurrentDirectory() + "/" + prefix + dirv
-		realNameGz := util.GetCurrentDirectory()+ "/" + prefix + dirv + extName
+		realNameGz := util.GetCurrentDirectory() + "/" + prefix + dirv + extName
+		//log.Println(realName, realNameGz, util.PathExist(realName))
 
-		log.Println(realName,realNameGz,util.PathExist(realName))
+		//如果不带扩展名gz的文件存在 认为该文件在当前目录 【如果同时存在既有压缩的又有不压缩的；则以不压缩的为准；gz的忽略
+		// 如果没有非压缩的文件 则走下面的流程 以有压缩的为准】
 		if (util.PathExist(realName)){
+			//dirsMap[dirv] =  true
+			fileMaps[dirv] = struct {
+				Name     string
+				gz       bool
+				fullName string
+				empty    bool
+			}{Name: dirv, gz:false , fullName: realName, empty:false }
+			continue
+		}
 
-			dirsMap[dirv] =  true
-			//文本文件
-			f, err := os.Open(realName)
-			if err != nil {
-				//文件已经存在
-				log.Println(err)
-			}
-			reader := bufio.NewReader(f)
-			for {
-				line, prefix, err := reader.ReadLine()
-
-				if err != nil {
-					if err == io.EOF {
-						log.Println("处理文件结束了,ok !")
-						break
-						//通知可以压缩文件了
-						//gzipOK <- struct{}{}
-						//go gzipFile()
-						//<-end
-						//return
-					} else {
-						log.Fatal(line, prefix, err)
-					}
-				}
-				//log.Println(string(line),prefix)
-				timeDeltaAndDeviceIdOK(line)
-			}
-
+		// 如果不带扩展名gz的文件不存在；看是否本地有带gz的文件存在如果存在后续就不需要在重复处理了；
+		if util.PathExist(realNameGz) {
+			//dirsMap[dirv] =  true
+			fileMaps[dirv] = struct {
+				Name     string
+				gz       bool
+				fullName string
+				empty    bool
+			}{Name: dirv, gz: true, fullName: realNameGz, empty:false }
+			continue
 		}else{
-			//如果么有在对应的目录中有该文件
-			dirsMap[dirv] =  false
-			log.Println("===>去指定目录中去查找.")
-			//如果文件不存在 则复制指定目录的文件过来让后变量素有文件
-			if len(directory) == 0 {
-				usage()
-				log.Fatal("没有指定要查找的目录.")
-			}else{
-				//log.Fatal("需要指定目录！")
-				//直接将制定目录的.gz文件解压到指定文件然后查找处理
-				//遍历所有的目录
-				dirs := make([]string, 0)
-				ts, err := time.Parse(TIMEFORMAT, startTime)
+
+			//既没有非压缩的也没有压缩的 情况 ===>  需要到指定目录去copy unzip and search ;
+			//dirsMap[dirv] =  false
+			fileMaps[dirv] = struct {
+				Name     string
+				gz       bool
+				fullName string
+				empty    bool
+			}{empty:true}
+		}
+	}
+
+	//fmt.Printf("%#v\n",fileMaps)
+	//os.Exit(1)
+
+	// 获取 不满足 条件的slice
+	unsatisfy := make([]string,0)
+	for k,v := range fileMaps{
+		if v.empty {
+			unsatisfy = append(unsatisfy,k)
+		}
+	}
+	fmt.Printf("%#v",unsatisfy)
+
+	for k,v := range fileMaps{
+		//先处理本地的所有的已知的文件；【包括两种情况 1.是有没有扩展名称的； 2.一种是有扩展名称的】
+		realNameIte := util.GetCurrentDirectory() + "/" + prefix + k
+		realNameGzIt := util.GetCurrentDirectory() + "/" + prefix + k + extName
+		if !v.empty{
+			//一种情况是 非压缩
+			if !v.gz {
+				//文本文件
+				f, err := os.Open(realNameIte)
 				if err != nil {
-					log.Fatal("解析开始时间格式错误:", err, startTime)
+					//文件已经存在
+					log.Println(err)
 				}
-				te, err := time.Parse(TIMEFORMAT, endTime)
-				if err != nil {
-					log.Fatal("解析结束时间格式错误:", err, endTime)
-				}
-				if te.Before(ts) {
-					log.Fatal("日期不合法,结束日期比开始日期还早哦.")
-				}
-				if ts.Equal(te) { // 日期相等
-					dirs = append(dirs, startTime)
-				} else {
-					// 日期大于前者
-					dirs = append(dirs, startTime)
-					//log.Println(dirs)
-					ts = ts.Add(time.Hour * 24)
-					for te.After(ts) || te.Equal(ts){
-						dirs = append(dirs, ts.Format(TIMEFORMAT))
-						ts = ts.Add(time.Hour * 24)
+				reader := bufio.NewReader(f)
+				for {
+					line, prefix, err := reader.ReadLine()
+
+					if err != nil {
+						if err == io.EOF {
+							log.Println("非压缩 处理文件结束了,ok !")
+							break
+							//通知可以压缩文件了
+							//gzipOK <- struct{}{}
+							//go gzipFile()
+							//<-end
+							//return
+						} else {
+							log.Fatal(line, prefix, err)
+						}
 					}
+					//log.Println(string(line),prefix)
+					timeDeltaAndDeviceIdOK(line)
 				}
-				log.Println(dirs)
+			} else{   ////一种情况是压缩 v.gz == true
 
-				util.Copy(directory,getDestDir())
+				//先拷贝在解压;然后在查找；
+				destFile := util.GetCurrentDirectory() +"/"+ copyFileTar[2:] + "/" + util.GetFileName(realNameGzIt)+ ".gz"
+				util.SimpleCopyFile(destFile,realNameGzIt)
 
-				log.Println(getDestDir())
-
-
-				dirv := getDestDir()
-				files, err := ioutil.ReadDir(dirv)
-				if err != nil {
-					log.Fatal(err)
-					//continue
-				}
-
-				for _, v := range files {
-					filenameFullName := path.Base(v.Name())
-					fullName := dirv + "/" + v.Name()
-					ext := path.Ext(filenameFullName)
-					if ext == extName {
-						log.Println(filenameFullName,ext,fullName,66)
-						//先解压文件；
-						UnGzipFile(fullName) //xxx.gz
-						//log.Println(fullName,util.GetFileName(filenameFullName),99)
-						log.Println(dirv+ "/" + util.GetFileName(filenameFullName),55)
-						findTextInFile(dirv+ "/" + util.GetFileName(filenameFullName))
-					}
-				}
+				UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar[2:] +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
+				//log.Println(fullName,util.GetFileName(filenameFullName),99)
+				findTextInFile(getDestFileDir() + util.GetFileName(realNameGzIt))
 			}
+		}else{
 
 		}
-		//if !util.PathExist(realNameGz) {
-		//	//gz 文件
-		//	log.Println(realNameGz,001)
-		//
-		//	dirsMap[realNameGz] =  true
-		//	//先复制文件
-		//	src := realNameGz
-		//	dest := util.GetCurrentDirectory() + "/" + util.GetFileName(realNameGz)
-		//	util.SimpleCopyFile(dest,src)
-		//
-		//	//先解压文件；
-		//	UnGzipFile(realNameGz) //xxx.gz
-		//	log.Println(realNameGz,677)
-		//	//findTextInFile(util.GetFileName(filenameFullName))
-		//
-		//}
+	}
+
+	// 先把前面满足条件的一次性跑完；
+	// 这里专门处理不满足条件的；  即这里是所有结构体为空的情况empty= true
+	for _,v := range unsatisfy{
+
+		realNameGzIt := util.GetCurrentDirectory() + "/" + prefix + v + extName
+
+		//是当前目录没有的；需要去指定目录 处理的
+		log.Println("开始===>去指定目录中查找.")
+		//如果文件不存在 则复制指定目录的文件过来让后变量素有文件
+		if len(directory) == 0 {
+			usage()
+			log.Fatal("没有指定要查找的目录.")
+		}else{
+			//直接将制定目录的.gz文件解压到指定文件然后查找处理
+			//遍历所有的目录
+			util.Copy(directory,getDestDir())
+			log.Println(getDestDir())
+			dirv := getDestDir()
+			files, err := ioutil.ReadDir(dirv)
+			if err != nil {
+				log.Fatal(err)
+				//continue
+			}
+			for _, v := range files {
+				filenameFullName := path.Base(v.Name())
+				fullName := dirv + "/" + v.Name()
+				ext := path.Ext(filenameFullName)
+
+				if ext == extName {
+					//文件名称是满足格式的压缩文件才需要处理
+					log.Println(util.GetFileName(filenameFullName),44444)
+					inSliceFileName := util.GetFileName(filenameFullName)[len(prefix):]
+					if ok,err :=util.Contain(inSliceFileName,unsatisfy); err != nil {
+						log.Println(ok,err)
+						continue
+					}
+					log.Println(filenameFullName,ext,fullName,66)
+					//先解压文件；
+					UnGzipFile(fullName,util.GetCurrentDirectory() + "/" + copyDirTar[2:] + "/" + util.GetFileName(realNameGzIt)) //xxx.gz
+
+					//UnGzipFile(fullName,getDestDir() + util.GetFileName(realNameGzIt)) //xxx.gz
+					//log.Println(fullName,util.GetFileName(filenameFullName),99)
+					log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar[2:] + "/" + util.GetFileName(realNameGzIt),77)
+					log.Println(dirv+ "/" + util.GetFileName(filenameFullName),55)
+					findTextInFile(dirv+ "/" + util.GetFileName(filenameFullName))
+				}
+			}
+		}
 	}
 
 	gzipOK <- struct{}{}
 	go gzipFile()
 	<-end
+
+
 }
 
 func findTextInFile(fileName string) {

@@ -10,6 +10,8 @@ cli
 *.zip
 *.log
 search_linux
+test/test
+/test/test
 
 
 
