@@ -192,7 +192,6 @@ func timeDeltaAndDeviceIdOK(lineLog []byte) bool {
 	tip := true
 	for _, content := range conds {
 		if !strings.Contains(logLine, content) {
-			//log.Println(222)
 			tip = false
 			break
 		}
@@ -201,7 +200,6 @@ func timeDeltaAndDeviceIdOK(lineLog []byte) bool {
 	if tip {
 		genarateFile(lineLog)
 	}
-	//log.Println(555,tip)
 
 	return tip
 }
@@ -499,7 +497,6 @@ func main() {
 	go gzipFile()
 	<-end
 
-
 }
 
 func findTextInFile(fileName string) {
@@ -531,5 +528,4 @@ func findTextInFile(fileName string) {
 		//log.Println(string(line),prefix)
 		timeDeltaAndDeviceIdOK(line)
 	}
-
 }

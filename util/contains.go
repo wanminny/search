@@ -21,5 +21,5 @@ func Contain(obj interface{}, target interface{}) (bool, error) {
 		}
 	}
 
-	return false, errors.New("not in array")
+	return false, errors.New("not in slice")
 }
