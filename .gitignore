@@ -1,0 +1,10 @@
+tcp_stdout*
+.DS_S*
+cli
+*.gz
+/tar
+/log
+/20181013
+
+
+
