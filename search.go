@@ -144,20 +144,17 @@ func usage() {
 
 	fmt.Fprint(os.Stdout, `
 search version : 0.0.1 
-Usage of ./search: -c  "RFID:3d" -start "20180925" -end "20180926" -dir /gopath/src/gobible/logmanager/cli
+Usage of ./search: -c  "RFID:3d xxxx " -start "20180925" -end "20180926" -dir /gopath/src/gobible/logmanager/cli
   -c string
-    	which condition to search.
+    	which condition to search 必填参数.
   -dir string
     	 如果文件不存在需要复制的目录(来解压文件).
   -end string
-    	format as: 20160102,默认当前时间的48h前. default `+endTimeFormat()+`
-  `+
+    	format as: 20160102,默认当前时间的48h前. 必填参数 `+
 		`
   -h	show help: (default true)
   -start string
-    	format as: 2016-01-02,默认是当天. default `+currentTimeFormat()+
-
-		`
+    	format as: 20160102,必填参数. 
 `)
 	fmt.Println()
 }
