@@ -14,7 +14,7 @@ var (
 func InitRouter()  {
 
 	Router.GET("/data",data.Search)
-	
+
 	//下发任务
 	Router.POST("/data/pick",data.Pick)
 
