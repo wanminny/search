@@ -20,9 +20,9 @@ func InitRouter()  {
 	//文件目录
 	Router.GET("/catalog",file.Content)
 
-	//http://localhost:8080/log/
+	//http://localhost:8080/log/ 可以成功！
+	// 注释： *filepath是固定的！否则报错
 	Router.ServeFiles("/log/*filepath",http.Dir("download"))
-	//Router.Handle("get","/log/",)
 
 	//下发任务
 	Router.POST("/data/pick",data.Pick)
