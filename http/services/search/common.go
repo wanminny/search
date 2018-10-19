@@ -74,6 +74,7 @@ type FileInfo struct {
 	empty bool
 }
 
+// 创建文件夹;处理完成后并删除！
 func mkdirs()  {
 
 	//先删除 后创建
@@ -85,6 +86,7 @@ func mkdirs()  {
 	//if err != nil{
 	//	log.Println(err)
 	//}
+
 	err :=os.Mkdir(copyDirTar,0755)
 	if err != nil{
 		log.Println(err)
@@ -94,7 +96,7 @@ func mkdirs()  {
 		log.Println(err)
 	}
 
-	////最后是否要删除 ?
+	////最后是否要删除
 	err =  os.Remove(copyDirTar)
 	if err != nil{
 		log.Println(err)

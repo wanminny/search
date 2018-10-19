@@ -37,8 +37,6 @@ func gzipFile() {
 
 func DoSearch(dirs []string,directory string)  {
 
-	//getGlobalDirsName()
-
 	mkdirs()
 
 	for _, dirv := range dirs {

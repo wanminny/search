@@ -15,6 +15,7 @@ var (
 //总路由
 func InitRouter()  {
 
+	//主页
 	Router.GET("/",data.Search)
 
 	//文件目录
@@ -22,6 +23,7 @@ func InitRouter()  {
 
 	//http://localhost:8080/log/ 可以成功！
 	// 注释： *filepath是固定的！否则报错
+	//文件目录列表服务
 	Router.ServeFiles("/log/*filepath",http.Dir("download"))
 
 	//下发任务

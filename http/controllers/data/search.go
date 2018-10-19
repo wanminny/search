@@ -12,6 +12,7 @@ import (
 	"gobible/logmanager/cli/http/services/search"
 	"gobible/logmanager/cli/http/cache/redis"
 	"gobible/logmanager/cli/http/utils"
+	"errors"
 )
 
 
@@ -30,7 +31,7 @@ func errResultJson(res http.ResponseWriter,msg string,err error)  {
 	if err != nil{
 		errMsg = err.Error()
 	}
-	content := fmt.Sprintf("%s,%s",msg,errMsg)
+	content := fmt.Sprintf("%s %s",msg,errMsg)
 	rlt := data.NewJson(1,content,nil)
 	fmt.Fprint(res,string(rlt))
 	//return
@@ -42,18 +43,16 @@ func getGlobalDirsName(res http.ResponseWriter,dirs []string,startTime,endTime s
 	if err != nil {
 		errResultJson(res,"解析开始时间格式错误:",nil)
 		return err
-		//log.Fatal("解析开始时间格式错误:", err, startTime)
 	}
 	te, err := time.Parse(search.TIMEFORMAT, endTime)
 	if err != nil {
 		errResultJson(res,"解析结束时间格式错误:",nil)
 		return err
-		//log.Fatal("解析结束时间格式错误:", err, endTime)
 	}
 	if te.Before(ts) {
+		err = errors.New("")
 		errResultJson(res,"日期不合法,结束日期比开始日期还早哦:",nil)
 		return err
-		//log.Fatal("日期不合法,结束日期比开始日期还早哦.")
 	}
 	if ts.Equal(te) { // 日期相等
 		dirs = append(dirs, startTime)
@@ -91,7 +90,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	//startTime := req.PostFormValue("start")
 	////startTime := params.ByName("start")
 	//log.Println(startTime,endTime,condition,dir)
-
 
 	content,err := ioutil.ReadAll(req.Body)
 	if err !=nil{
@@ -142,9 +140,8 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		return
 	}
 
-
 	//os.Exit(0)
-	//go search.DoSearch(dirs,dir)
+	go search.DoSearch(dirs,dir)
 
 	//提交任务后马上设置值
 	redis.SetValue(findCondition,composeStr)
