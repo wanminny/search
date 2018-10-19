@@ -16,7 +16,11 @@ import (
 
 
 func Search(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
-	res.Write([]byte("search service!"))
+
+	rlt := data.NewJson(0,"search service",nil)
+	fmt.Fprint(res,string(rlt))
+	return
+
 }
 
 

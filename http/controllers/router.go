@@ -4,6 +4,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"gobible/logmanager/cli/http/controllers/data"
 	"gobible/logmanager/cli/http/controllers/task"
+	"gobible/logmanager/cli/http/controllers/file"
+	"net/http"
 )
 
 var (
@@ -13,7 +15,14 @@ var (
 //总路由
 func InitRouter()  {
 
-	Router.GET("/data",data.Search)
+	Router.GET("/",data.Search)
+
+	//文件目录
+	Router.GET("/catalog",file.Content)
+
+	//http://localhost:8080/log/
+	Router.ServeFiles("/log/*filepath",http.Dir("download"))
+	//Router.Handle("get","/log/",)
 
 	//下发任务
 	Router.POST("/data/pick",data.Pick)
