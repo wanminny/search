@@ -8,6 +8,8 @@ import (
 	"strings"
 	"fmt"
 	"path"
+	"crypto/md5"
+	"encoding/hex"
 )
 
 var (
@@ -77,9 +79,21 @@ func mkdirs()  {
 
 }
 
+func MD5(text string) string{
+	ctx := md5.New()
+	ctx.Write([]byte(text))
+	return hex.EncodeToString(ctx.Sum(nil))
+}
+
+
+
 
 func main()  {
 
+	//log.Println(len(nil))
+	log.Println(MD5("startendcondir"))
+
+	os.Exit(1)
 
 	mkdirs()
 

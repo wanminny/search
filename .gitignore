@@ -11,6 +11,7 @@ cli
 search_linux
 test/test
 /test/test
+/http/http
 
 
 

@@ -11,6 +11,10 @@ import (
 	"gobible/logmanager/cli/http/services/util"
 )
 
+func init()  {
+	log.SetFlags(log.Llongfile | log.Ltime)
+}
+
 //压缩文件
 func gzipFile() {
 
