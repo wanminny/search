@@ -52,6 +52,15 @@ func SetValue(key string,value string)  {
 
 }
 
+func DelKey(key string)  {
+
+	conn := RedisClient.Get()
+	_, err := conn.Do("DEL", key)
+	if err != nil{
+		log.Println(err)
+	}
+}
+
 func AllKeys() (kvs map[string]string) {
 
 	kvs = make(map[string]string)

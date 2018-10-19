@@ -6,7 +6,6 @@ import (
 	"gobible/logmanager/cli/http/cache/redis"
 	"gobible/logmanager/cli/http/models/data"
 	"fmt"
-	"log"
 )
 
 // 列出正在处理的任务
@@ -33,7 +32,7 @@ func CheckIsRunning(res http.ResponseWriter,req *http.Request,params httprouter.
 
 	v,err := redis.GetValue(no)
 	if err != nil{
-		log.Println(err)
+		//log.Println(err)
 		rlt := data.NewJson(1, "任务已经处理完成或者不存在该任务：" + err.Error(),nil)
 		fmt.Fprint(res,string(rlt))
 		return

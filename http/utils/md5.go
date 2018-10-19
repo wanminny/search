@@ -5,6 +5,9 @@ import (
 	"encoding/hex"
 )
 
+/***
+	整个项目通用的utils
+ */
 func MD5(text string) string{
 	ctx := md5.New()
 	ctx.Write([]byte(text))

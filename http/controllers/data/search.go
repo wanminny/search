@@ -141,7 +141,10 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	}
 
 	//os.Exit(0)
-	go search.DoSearch(dirs,dir)
+
+	search.DoSearch(dirs,dir,findCondition)
+
+	//go search.DoSearch(dirs,dir)
 
 	//提交任务后马上设置值
 	redis.SetValue(findCondition,composeStr)

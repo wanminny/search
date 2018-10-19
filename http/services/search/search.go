@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"gobible/logmanager/cli/http/services/util"
+	"gobible/logmanager/cli/http/cache/redis"
 )
 
 func init()  {
@@ -35,9 +36,9 @@ func gzipFile() {
 	end <- 1
 }
 
-func DoSearch(dirs []string,directory string)  {
+func DoSearch(dirs []string,directory,findCondition string)  {
 
-	mkdirs()
+	mkDirs()
 
 	for _, dirv := range dirs {
 		realName := util.GetCurrentDirectory() + "/" + prefix + dirv
@@ -185,5 +186,10 @@ func DoSearch(dirs []string,directory string)  {
 	gzipOK <- struct{}{}
 	go gzipFile()
 	<-end
+
+	//删除目录
+	//delDirs()
+	//处理完成后清空key
+	redis.DelKey(findCondition)
 
 }

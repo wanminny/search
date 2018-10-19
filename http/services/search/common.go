@@ -13,7 +13,7 @@ import (
 
 const TIMEFORMAT = "20060102"
 const TIMEFORMATZIP = "20060102150405"
-const DIR = "/gopath/src/gobible/logmanager/cli"
+const DIR = "/gopath/src/gobible/logmanager/cli/20181013"
 
 var (
 	startTime string //开始时间
@@ -75,7 +75,7 @@ type FileInfo struct {
 }
 
 // 创建文件夹;处理完成后并删除！
-func mkdirs()  {
+func mkDirs()  {
 
 	//先删除 后创建
 	//err :=  os.Remove(copyDirTar)
@@ -97,7 +97,20 @@ func mkdirs()  {
 	}
 
 	////最后是否要删除
-	err =  os.Remove(copyDirTar)
+	//err =  os.Remove(copyDirTar)
+	//if err != nil{
+	//	log.Println(err)
+	//}
+	//err =  os.Remove(copyFileTar)
+	//if err != nil{
+	//	log.Println(err)
+	//}
+}
+
+func delDirs()  {
+
+	//最后是否要删除
+	err :=  os.Remove(copyDirTar)
 	if err != nil{
 		log.Println(err)
 	}
@@ -183,7 +196,7 @@ func findTextInFile(fileName string) {
 
 func getDestDir() string {
 
-	return util.GetCurrentDirectory() + "/"+ copyDirTar
+	return util.GetCurrentDirectory() + "/"+ copyDirTar  //copyDirTar[2:] + "/"
 }
 
 
