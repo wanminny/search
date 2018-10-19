@@ -19,7 +19,7 @@ func GetCurrentDirectory() string {
 
 func GetFileName(fullFilename string)  string {
 
-	//fullFilename := "/Users/itfanr/Documents/test.txt"
+	//fullFilename := "/Documents/test.txt"
 	//fmt.Println("fullFilename =", fullFilename)
 	var filenameWithSuffix string
 	filenameWithSuffix = path.Base(fullFilename) //获取文件名带后缀

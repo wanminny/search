@@ -76,6 +76,7 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	startTime := pickData.Start
 	endTime := pickData.End
 	condition := pickData.C
+	//自定义要查找的目录
 	dir := pickData.Dir
 
 	//参数校验
@@ -86,10 +87,11 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		fmt.Fprint(res,"参数不合法！")
 		return
 	}
+	//格式化的日志列表slice
 	dirs := make([]string,0)
 	//参数校验
 	getGlobalDirsName(dirs,startTime,endTime)
 
-	search.DoSearch()
+	search.DoSearch(dirs,dir)
 	fmt.Fprintf(res,"文件较大,处理中！")
 }
