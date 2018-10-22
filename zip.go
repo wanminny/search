@@ -86,8 +86,6 @@ func UnzipDir(zipFile, dir string) {
 
 // gzip 文件 解压缩；
 func UnGzipFile(gzipFile string,destDirFile string)  {
-
-	log.Println(111)
 	// file read
 	fr, err := os.Open(gzipFile)
 	if err != nil {
@@ -102,7 +100,6 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 	}
 
 	defer gr.Close()
-	//log.Println(2222)
 	reader := bufio.NewReader(gr)
 
 	//log.Println(3333)
@@ -134,7 +131,6 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 			panic(err)
 		}
 	}
-	log.Println(n)
 	log.Println("ok!")
 }
 

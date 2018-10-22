@@ -281,6 +281,36 @@ func getDestFileDir() string {
 	return util.GetCurrentDirectory() +"/"+ copyFileTar + "/"
 }
 
+func findTextInFile(fileName string) {
+
+	f, err := os.Open(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	reader := bufio.NewReader(f)
+
+	for {
+		line, prefix, err := reader.ReadLine()
+
+		if err != nil {
+			if err == io.EOF {
+				log.Println("处理文件 压缩文件 结束了,ok !")
+				break
+				////通知可以压缩文件了
+				//gzipOK <- struct{}{}
+				//go gzipFile()
+				//<-end
+				//return
+			} else {
+				log.Fatal(line, prefix, err)
+			}
+		}
+		//log.Println(string(line),prefix)
+		timeDeltaAndDeviceIdOK(line)
+	}
+}
 
 
 func main() {
@@ -294,6 +324,7 @@ func main() {
 	parameterCheck()
 	getGlobalDirsName()
 	mkdirs()
+
 	for _, dirv := range dirs {
 		realName := util.GetCurrentDirectory() + "/" + prefix + dirv
 		realNameGz := util.GetCurrentDirectory() + "/" + prefix + dirv + extName
@@ -345,13 +376,14 @@ func main() {
 			unsatisfy = append(unsatisfy,k)
 		}
 	}
-	fmt.Printf("%#v",unsatisfy)
+	//fmt.Printf("%#v",unsatisfy)
+	//os.Exit(1)
 
 	for k,v := range fileMaps{
 		//先处理本地的所有的已知的文件；【包括两种情况 1.是有没有扩展名称的； 2.一种是有扩展名称的】
 		realNameIte := util.GetCurrentDirectory() + "/" + prefix + k
 		realNameGzIt := util.GetCurrentDirectory() + "/" + prefix + k + extName
-		if !v.empty{
+		if !v.empty{  //非空 即不需要去指定目录去查找的情况
 			//一种情况是 非压缩
 			if !v.gz {
 				//文本文件
@@ -388,16 +420,13 @@ func main() {
 
 				UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
 				//log.Println(fullName,util.GetFileName(filenameFullName),99)
-				log.Println(88888888)
 				findTextInFile(getDestFileDir() + util.GetFileName(realNameGzIt))
 			}
-		}else{
-
 		}
 	}
 
 	// 先把前面满足条件的一次性跑完；
-	// 这里专门处理不满足条件的；  即这里是所有结构体为空的情况empty= true
+	// 这里专门处理不满足条件的；  即这里是所有结构体为空的情况empty= true 【去指定目录去查找的情况】
 	for _,v := range unsatisfy{
 
 		realNameGzIt := util.GetCurrentDirectory() + "/" + prefix + v + extName
@@ -405,45 +434,40 @@ func main() {
 		//是当前目录没有的；需要去指定目录 处理的
 		log.Println("开始===>去指定目录中查找.")
 		//如果文件不存在 则复制指定目录的文件过来让后变量素有文件
-		if len(directory) == 0 {
-			usage()
-			log.Fatal("没有指定要查找的目录.")
-		}else{
-			//直接将制定目录的.gz文件解压到指定文件然后查找处理
-			//遍历所有的目录
-			util.Copy(directory,getDestDir())
-			log.Println(getDestDir())
-			dirv := getDestDir()
-			files, err := ioutil.ReadDir(dirv)
-			if err != nil {
-				log.Fatal(err)
-				//continue
-			}
-			for _, v := range files {
-				filenameFullName := path.Base(v.Name())
-				fullName := dirv + v.Name()
-				ext := path.Ext(filenameFullName)
+		//直接将制定目录的.gz文件解压到指定文件然后查找处理
+		//遍历所有的目录
+		util.Copy(directory,getDestDir())
+		log.Println(getDestDir())
+		dirv := getDestDir()
+		files, err := ioutil.ReadDir(dirv)
+		if err != nil {
+			log.Fatal(err)
+			//continue
+		}
+		for _, v := range files {
+			filenameFullName := path.Base(v.Name())
+			fullName := dirv + v.Name()
+			ext := path.Ext(filenameFullName)
 
-				if ext == extName {
-					//文件名称是满足格式的压缩文件才需要处理
-					log.Println(util.GetFileName(filenameFullName),44)
-					inSliceFileName := util.GetFileName(filenameFullName)[len(prefix):]
-					if ok,err :=util.Contain(inSliceFileName,unsatisfy); err != nil {
-						log.Println(ok,err)
-						continue
-					}
-					log.Println(filenameFullName,ext,fullName,66)
-					//先解压文件；
-
-					log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt),99)
-					UnGzipFile(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt)) //xxx.gz
-
-					//UnGzipFile(fullName,getDestDir() + util.GetFileName(realNameGzIt)) //xxx.gz
-					//log.Println(fullName,util.GetFileName(filenameFullName),99)
-					log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt),77)
-					log.Println(dirv + util.GetFileName(filenameFullName),55)
-					findTextInFile(dirv + util.GetFileName(filenameFullName))
+			if ext == extName {
+				//文件名称是满足格式的压缩文件才需要处理
+				log.Println(util.GetFileName(filenameFullName),44)
+				inSliceFileName := util.GetFileName(filenameFullName)[len(prefix):]
+				if ok,err :=util.Contain(inSliceFileName,unsatisfy); err != nil {
+					log.Println(ok,err)
+					continue
 				}
+				log.Println(filenameFullName,ext,fullName,66)
+				//先解压文件；
+
+				log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt),99)
+				UnGzipFile(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt)) //xxx.gz
+
+				//UnGzipFile(fullName,getDestDir() + util.GetFileName(realNameGzIt)) //xxx.gz
+				//log.Println(fullName,util.GetFileName(filenameFullName),99)
+				log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt),77)
+				log.Println(dirv + util.GetFileName(filenameFullName),55)
+				findTextInFile(dirv + util.GetFileName(filenameFullName))
 			}
 		}
 	}
@@ -453,36 +477,6 @@ func main() {
 	<-end
 
 	deldirs()
-
 }
 
-func findTextInFile(fileName string) {
 
-	f, err := os.Open(fileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	reader := bufio.NewReader(f)
-
-	for {
-		line, prefix, err := reader.ReadLine()
-
-		if err != nil {
-			if err == io.EOF {
-				log.Println("处理文件 压缩文件 结束了,ok !")
-				break
-				////通知可以压缩文件了
-				//gzipOK <- struct{}{}
-				//go gzipFile()
-				//<-end
-				//return
-			} else {
-				log.Fatal(line, prefix, err)
-			}
-		}
-		//log.Println(string(line),prefix)
-		timeDeltaAndDeviceIdOK(line)
-	}
-}
