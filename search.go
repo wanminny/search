@@ -93,8 +93,6 @@ func genarateFile(content []byte) {
 
 	defer f.Close()
 
-	//log.Println(destFileDir)
-
 	if err != nil {
 		log.Fatal("生成目标文件异常:", err)
 	}
@@ -110,9 +108,8 @@ func gzipFile() {
 	<-gzipOK
 
 	//destGzipFileDir = "/tar/" + currentTimeFormat() + ".tar.gz"
+	//deviceId 是查找原因 之前是准备仅仅定义设备
 	destGzipFileDir = deviceId + currentTimeFormatZip()+".zip"
-
-	//Compress(destGzipFileDir,destFileDir)
 
 	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
 
@@ -281,9 +278,9 @@ func getGlobalDirsName()  {
 }
 
 func getDestFileDir() string {
-
 	return util.GetCurrentDirectory() +"/"+ copyFileTar + "/"
 }
+
 
 func findTextInFile(fileName string) {
 
@@ -422,8 +419,8 @@ func main() {
 				destFile := util.GetCurrentDirectory() +"/"+ copyFileTar + "/" + util.GetFileName(realNameGzIt)+ ".gz"
 				util.SimpleCopyFile(destFile,realNameGzIt)
 
-				util.UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
-				//log.Println(fullName,util.GetFileName(filenameFullName),99)
+				util.UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar +"/" + util.GetFileName(realNameGzIt))
+
 				findTextInFile(getDestFileDir() + util.GetFileName(realNameGzIt))
 			}
 		}
@@ -448,7 +445,7 @@ func main() {
 			//复制文件 到指定目录
 			util.SimpleCopyFile(destFileName,fileName)
 			//先解压文件；
-			util.UnGzipFile(destFileName,tmpDir + util.GetFileName(realNameGzIt)) //xxx.gz
+			util.UnGzipFile(destFileName,tmpDir + util.GetFileName(realNameGzIt))
 
 			findTextInFile(tmpDir + util.GetFileName(realNameGzIt))
 		}

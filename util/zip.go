@@ -47,43 +47,6 @@ func ZipDir(dir, zipFile string) {
 	})
 }
 
-// un zip 文件
-func UnzipDir(zipFile, dir string) {
-
-	r, err := zip.OpenReader(zipFile)
-	if err != nil {
-		log.Fatalf("Open zip file failed: %s\n", err.Error())
-	}
-	defer r.Close()
-
-	for _, f := range r.File {
-		func() {
-			path := dir + string(filepath.Separator) + f.Name
-			os.MkdirAll(filepath.Dir(path), 0755)
-			fDest, err := os.Create(path)
-			if err != nil {
-				log.Printf("Create failed: %s\n", err.Error())
-				return
-			}
-			defer fDest.Close()
-
-			fSrc, err := f.Open()
-			if err != nil {
-				log.Printf("Open failed: %s\n", err.Error())
-				return
-			}
-			defer fSrc.Close()
-
-			_, err = io.Copy(fDest, fSrc)
-			if err != nil {
-				log.Printf("Copy failed: %s\n", err.Error())
-				return
-			}
-		}()
-	}
-}
-
-
 // gzip 文件 解压缩；
 func UnGzipFile(gzipFile string,destDirFile string)  {
 	// file read
@@ -131,6 +94,43 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 		}
 	}
 	log.Println("ok!")
+}
+
+
+// un zip 文件
+func UnzipDir(zipFile, dir string) {
+
+	r, err := zip.OpenReader(zipFile)
+	if err != nil {
+		log.Fatalf("Open zip file failed: %s\n", err.Error())
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		func() {
+			path := dir + string(filepath.Separator) + f.Name
+			os.MkdirAll(filepath.Dir(path), 0755)
+			fDest, err := os.Create(path)
+			if err != nil {
+				log.Printf("Create failed: %s\n", err.Error())
+				return
+			}
+			defer fDest.Close()
+
+			fSrc, err := f.Open()
+			if err != nil {
+				log.Printf("Open failed: %s\n", err.Error())
+				return
+			}
+			defer fSrc.Close()
+
+			_, err = io.Copy(fDest, fSrc)
+			if err != nil {
+				log.Printf("Copy failed: %s\n", err.Error())
+				return
+			}
+		}()
+	}
 }
 
 func main1()  {
