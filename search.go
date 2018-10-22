@@ -58,7 +58,6 @@ var (
 	//目标文件夹
 	//destDir = "/tar"
 
-
 	//当前的目录的拷贝目录
 	copyDirTar = "copy-dir-tar"
 
@@ -86,7 +85,7 @@ var (
 func genarateFile(content []byte) {
 
 	keyWords := deviceId
-	destFileDir = "log/gen-" + keyWords + currentTimeFormat() + ".log"
+	destFileDir = "log/gen-" + keyWords + genFileTimeFormat() + ".log"
 	//destFileDir = "log/gen-"+currentTimeFormat()+".log"
 
 	f, err := os.OpenFile(destFileDir, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
@@ -113,7 +112,6 @@ func gzipFile() {
 	destGzipFileDir = deviceId + currentTimeFormatZip()+".zip"
 
 	//Compress(destGzipFileDir,destFileDir)
-	//log.Println(GetCurrentDirectory())
 
 	wantZipDir := util.GetCurrentDirectory() + "/log"
 
@@ -125,7 +123,7 @@ func gzipFile() {
 }
 
 func init() {
-	//log.SetFlags(log.Llongfile | log.Ltime)
+	log.SetFlags(log.Llongfile | log.Ltime)
 }
 
 func initParameter() {
@@ -142,11 +140,10 @@ func initParameter() {
 
 }
 
-func currentTimeFormat() string {
+func genFileTimeFormat() string  {
 	//默认当天
-	return time.Now().Format(TIMEFORMAT)
+	return time.Now().Format(TIMEFORMATZIP)
 }
-
 
 // 生成的压缩文件 便于区分
 func currentTimeFormatZip() string {
@@ -227,48 +224,9 @@ func parameterCheck()  {
 
 }
 
-func timeCheckAndStoreDirs()  {
-
-	dirs := make([]string, 0)
-	ts, err := time.Parse(TIMEFORMAT, startTime)
-	if err != nil {
-		log.Fatal("解析开始时间格式错误:", err, startTime)
-	}
-	te, err := time.Parse(TIMEFORMAT, endTime)
-	if err != nil {
-		log.Fatal("解析结束时间格式错误:", err, endTime)
-	}
-	if te.Before(ts) {
-		log.Fatal("日期不合法,结束日期比开始日期还早哦.")
-	}
-	if ts.Equal(te) { // 日期相等
-		dirs = append(dirs, startTime)
-	} else {
-		// 日期大于前者
-		dirs = append(dirs, startTime)
-		//log.Println(dirs)
-		ts = ts.Add(time.Hour * 24)
-		for te.After(ts) || te.Equal(ts){
-			dirs = append(dirs, ts.Format(TIMEFORMAT))
-			ts = ts.Add(time.Hour * 24)
-		}
-	}
-	log.Println(dirs)
-}
-
 func mkdirs()  {
 
-	//先删除 后创建
-	err :=  os.Remove(copyDirTar)
-	if err != nil{
-		log.Println(err)
-	}
-	err =  os.Remove(copyFileTar)
-	if err != nil{
-		log.Println(err)
-	}
-
-	err =os.Mkdir(copyDirTar,0755)
+	err :=os.Mkdir(copyDirTar,0755)
 	if err != nil{
 		log.Println(err)
 	}
@@ -277,17 +235,19 @@ func mkdirs()  {
 		log.Println(err)
 	}
 
-	////最后是否要删除？
-	//err =  os.Remove(copyDirTar)
-	//if err != nil{
-	//	log.Println(err)
-	//}
-	//err =  os.Remove(copyFileTar)
-	//if err != nil{
-	//	log.Println(err)
-	//}
+}
 
+func deldirs()  {
 
+	////最后是否要删除
+	err :=  os.RemoveAll(copyDirTar)
+	if err != nil{
+		log.Println(err)
+	}
+	err =  os.RemoveAll(copyFileTar)
+	if err != nil{
+		log.Println(err)
+	}
 }
 
 func getGlobalDirsName()  {
@@ -321,7 +281,6 @@ func getGlobalDirsName()  {
 
 func getDestDir() string {
 
-	//return util.GetCurrentDirectory() + "/"+ copyDirTar
 	return util.GetCurrentDirectory() + "/" + copyDirTar + "/"
 
 }
@@ -439,6 +398,7 @@ func main() {
 
 				UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
 				//log.Println(fullName,util.GetFileName(filenameFullName),99)
+				log.Println(88888888)
 				findTextInFile(getDestFileDir() + util.GetFileName(realNameGzIt))
 			}
 		}else{
@@ -484,6 +444,8 @@ func main() {
 					}
 					log.Println(filenameFullName,ext,fullName,66)
 					//先解压文件；
+
+					log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt),99)
 					UnGzipFile(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt)) //xxx.gz
 
 					//UnGzipFile(fullName,getDestDir() + util.GetFileName(realNameGzIt)) //xxx.gz
@@ -499,6 +461,8 @@ func main() {
 	gzipOK <- struct{}{}
 	go gzipFile()
 	<-end
+
+	deldirs()
 
 }
 
