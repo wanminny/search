@@ -85,10 +85,55 @@ func MD5(text string) string{
 	return hex.EncodeToString(ctx.Sum(nil))
 }
 
+var (
+	//当前的目录的拷贝目录
+	copyDirTar = "copy-dir-tar"
 
+	//当前的文件的拷贝目录
+	copyFileTar = "copy-file-tar"
+)
+
+func mkdirs1()  {
+
+	//先删除 后创建
+	err :=  os.RemoveAll(copyDirTar)
+	if err != nil{
+		log.Println(err)
+	}
+	err =  os.RemoveAll(copyFileTar)
+	if err != nil{
+		log.Println(err)
+	}
+
+	err =os.Mkdir(copyDirTar,0755)
+	if err != nil{
+		log.Println(err)
+	}
+	err = os.Mkdir(copyFileTar,0755)
+	if err != nil{
+		log.Println(err)
+	}
+
+	//最后是否要删除？
+	err =  os.RemoveAll(copyDirTar)
+	if err != nil{
+		log.Println(err)
+	}
+	err =  os.RemoveAll(copyFileTar)
+	if err != nil{
+		log.Println(err)
+	}
+
+
+}
 
 
 func main()  {
+
+
+	mkdirs1()
+
+	os.Exit(1)
 
 	//log.Println(len(nil))
 	log.Println(MD5("startendcondir"))
