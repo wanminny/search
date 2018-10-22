@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"os"
@@ -102,7 +102,6 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 	defer gr.Close()
 	reader := bufio.NewReader(gr)
 
-	//log.Println(3333)
 	// 打开文件
 	//fw, err := os.OpenFile(copyDirTar + "/" + util.GetFileName(gzipFile), os.O_CREATE | os.O_WRONLY, 0644/*os.FileMode(h.Mode)*/)
 	fw, err := os.OpenFile(destDirFile, os.O_CREATE | os.O_WRONLY, 0644/*os.FileMode(h.Mode)*/)
