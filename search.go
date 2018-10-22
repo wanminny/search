@@ -60,10 +60,10 @@ var (
 
 
 	//当前的目录的拷贝目录
-	copyDirTar = "./copy-dir-tar"
+	copyDirTar = "copy-dir-tar"
 
 	//当前的文件的拷贝目录
-	copyFileTar = "./copy-file-tar"
+	copyFileTar = "copy-file-tar"
 
 )
 
@@ -322,14 +322,14 @@ func getGlobalDirsName()  {
 func getDestDir() string {
 
 	//return util.GetCurrentDirectory() + "/"+ copyDirTar
-	return util.GetCurrentDirectory() + "/"+ copyDirTar[2:] 
+	return util.GetCurrentDirectory() + "/" + copyDirTar + "/"
 
 }
 
 
 func getDestFileDir() string {
 
-	return util.GetCurrentDirectory() +"/"+ copyFileTar[2:] + "/"
+	return util.GetCurrentDirectory() +"/"+ copyFileTar + "/"
 }
 
 
@@ -434,10 +434,10 @@ func main() {
 			} else{   ////一种情况是压缩 v.gz == true
 
 				//先拷贝在解压;然后在查找；
-				destFile := util.GetCurrentDirectory() +"/"+ copyFileTar[2:] + "/" + util.GetFileName(realNameGzIt)+ ".gz"
+				destFile := util.GetCurrentDirectory() +"/"+ copyFileTar + "/" + util.GetFileName(realNameGzIt)+ ".gz"
 				util.SimpleCopyFile(destFile,realNameGzIt)
 
-				UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar[2:] +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
+				UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
 				//log.Println(fullName,util.GetFileName(filenameFullName),99)
 				findTextInFile(getDestFileDir() + util.GetFileName(realNameGzIt))
 			}
@@ -471,7 +471,7 @@ func main() {
 			}
 			for _, v := range files {
 				filenameFullName := path.Base(v.Name())
-				fullName := dirv + "/" + v.Name()
+				fullName := dirv + v.Name()
 				ext := path.Ext(filenameFullName)
 
 				if ext == extName {
@@ -484,13 +484,13 @@ func main() {
 					}
 					log.Println(filenameFullName,ext,fullName,66)
 					//先解压文件；
-					UnGzipFile(fullName,util.GetCurrentDirectory() + "/" + copyDirTar[2:] + "/" + util.GetFileName(realNameGzIt)) //xxx.gz
+					UnGzipFile(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt)) //xxx.gz
 
 					//UnGzipFile(fullName,getDestDir() + util.GetFileName(realNameGzIt)) //xxx.gz
 					//log.Println(fullName,util.GetFileName(filenameFullName),99)
-					log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar[2:] + "/" + util.GetFileName(realNameGzIt),77)
-					log.Println(dirv+ "/" + util.GetFileName(filenameFullName),55)
-					findTextInFile(dirv+ "/" + util.GetFileName(filenameFullName))
+					log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt),77)
+					log.Println(dirv + util.GetFileName(filenameFullName),55)
+					findTextInFile(dirv + util.GetFileName(filenameFullName))
 				}
 			}
 		}
