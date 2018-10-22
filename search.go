@@ -65,6 +65,9 @@ var (
 	//当前的文件的拷贝目录
 	copyFileTar = "copy-file-tar"
 
+	//压缩文件生成的结果文件夹
+	zipResultDir = "result"
+
 )
 
 
@@ -109,7 +112,10 @@ func gzipFile() {
 
 	//destGzipFileDir = "/tar/" + currentTimeFormat() + ".tar.gz"
 	//deviceId 是查找原因 之前是准备仅仅定义设备
-	destGzipFileDir = deviceId + currentTimeFormatZip()+".zip"
+
+	//util.GetCurrentDirectory() + "/" + "result" + "/"
+
+	destGzipFileDir = util.GetCurrentDirectory() + "/" + zipResultDir + "/" + deviceId + currentTimeFormatZip()+".zip"
 
 	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
 
