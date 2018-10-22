@@ -219,6 +219,13 @@ func parameterCheck()  {
 }
 
 func mkdirs()  {
+	
+	if !util.PathExist(util.GetCurrentDirectory() + "/" + zipResultDir){
+		err :=os.Mkdir(zipResultDir,0755)
+		if err != nil{
+			log.Println(err)
+		}
+	}
 
 	err :=os.Mkdir(copyDirTar,0755)
 	if err != nil{
