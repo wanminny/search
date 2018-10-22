@@ -222,33 +222,6 @@ func delDirs()  {
 
 }
 
-func getGlobalDirsName()  {
-
-	ts, err := time.Parse(TIMEFORMAT, startTime)
-	if err != nil {
-		log.Fatal("解析开始时间格式错误:", err, startTime)
-	}
-	te, err := time.Parse(TIMEFORMAT, endTime)
-	if err != nil {
-		log.Fatal("解析结束时间格式错误:", err, endTime)
-	}
-	if te.Before(ts) {
-		log.Fatal("日期不合法,结束日期比开始日期还早哦.")
-	}
-	if ts.Equal(te) { // 日期相等
-		dirs = append(dirs, startTime)
-	} else {
-		// 日期大于前者
-		dirs = append(dirs, startTime)
-		//log.Println(dirs)
-		ts = ts.Add(time.Hour * 24)
-		for te.After(ts) || te.Equal(ts){
-			dirs = append(dirs, ts.Format(TIMEFORMAT))
-			ts = ts.Add(time.Hour * 24)
-		}
-	}
-	log.Println(dirs)
-}
 
 func getDestFileDir() string {
 	return util.GetCurrentDirectory() +"/"+ copyFileTar + "/"

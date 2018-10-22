@@ -45,42 +45,6 @@ func ZipDir(dir, zipFile string) {
 	})
 }
 
-// un zip 文件
-func UnzipDir(zipFile, dir string) {
-
-	r, err := zip.OpenReader(zipFile)
-	if err != nil {
-		log.Fatalf("Open zip file failed: %s\n", err.Error())
-	}
-	defer r.Close()
-
-	for _, f := range r.File {
-		func() {
-			path := dir + string(filepath.Separator) + f.Name
-			os.MkdirAll(filepath.Dir(path), 0755)
-			fDest, err := os.Create(path)
-			if err != nil {
-				log.Printf("Create failed: %s\n", err.Error())
-				return
-			}
-			defer fDest.Close()
-
-			fSrc, err := f.Open()
-			if err != nil {
-				log.Printf("Open failed: %s\n", err.Error())
-				return
-			}
-			defer fSrc.Close()
-
-			_, err = io.Copy(fDest, fSrc)
-			if err != nil {
-				log.Printf("Copy failed: %s\n", err.Error())
-				return
-			}
-		}()
-	}
-}
-
 
 // gzip 文件 解压缩；
 func UnGzipFile(gzipFile string,destDirFile string)  {
@@ -103,7 +67,6 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 	//log.Println(2222)
 	reader := bufio.NewReader(gr)
 
-	//log.Println(3333)
 	// 打开文件
 	//fw, err := os.OpenFile(copyDirTar + "/" + util.GetFileName(gzipFile), os.O_CREATE | os.O_WRONLY, 0644/*os.FileMode(h.Mode)*/)
 	fw, err := os.OpenFile(destDirFile, os.O_CREATE | os.O_WRONLY, 0644/*os.FileMode(h.Mode)*/)
@@ -112,11 +75,9 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 	}
 	defer fw.Close()
 
-	n := 0
 	for {
 		line,prefix,err :=reader.ReadLine()
 		//log.Println(line)
-		n++
 		if err != nil{
 			log.Println(err,line,prefix)
 			if err == io.EOF{
@@ -132,6 +93,5 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 			panic(err)
 		}
 	}
-	log.Println(n)
 	log.Println("ok!")
 }
