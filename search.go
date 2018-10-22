@@ -266,14 +266,6 @@ func getGlobalDirsName()  {
 	log.Println(dirs)
 }
 
-
-func getDestDir() string {
-
-	return util.GetCurrentDirectory() + "/" + copyDirTar + "/"
-
-}
-
-
 func getDestFileDir() string {
 
 	return util.GetCurrentDirectory() +"/"+ copyFileTar + "/"
@@ -428,67 +420,24 @@ func main() {
 	for _,v := range unsatisfy{
 
 		realNameGzIt := directory + "/" + prefix + v + extName
-
 		//是当前目录没有的；需要去指定目录 处理的
 		log.Println("开始===>去指定目录中查找.")
 		//直接将制定目录的.gz文件解压到指定文件然后查找处理
-
-		log.Println(realNameGzIt)
 
 		fileName := directory + "/" + util.GetFileName(realNameGzIt) + extName
 
 		tmpDir := util.GetCurrentDirectory() + "/" + copyDirTar + "/"
 
 		destFileName := tmpDir +  util.GetFileName(realNameGzIt) + extName
-		log.Println(fileName,tmpDir)
 
 		if util.PathExist(fileName) {
 			//复制文件 到指定目录
 			util.SimpleCopyFile(destFileName,fileName)
-			//util.Copy(fileName,tmpDir)
-
 			//先解压文件；
 			UnGzipFile(destFileName,tmpDir + util.GetFileName(realNameGzIt)) //xxx.gz
 			log.Println(8888)
 			findTextInFile(tmpDir + util.GetFileName(realNameGzIt))
 		}
-
-		////遍历所有的目录
-		//util.Copy(directory,getDestDir())
-		//
-		//log.Println(getDestDir())
-		//dirv := getDestDir()
-		//
-		//files, err := ioutil.ReadDir(dirv)
-		//if err != nil {
-		//	log.Fatal(err)
-		//	//continue
-		//}
-		//for _, v := range files {
-		//	filenameFullName := path.Base(v.Name())
-		//	fullName := dirv + v.Name()
-		//	ext := path.Ext(filenameFullName)
-		//
-		//	if ext == extName {
-		//		//文件名称是满足格式的压缩文件才需要处理
-		//		log.Println(util.GetFileName(filenameFullName),44)
-		//		inSliceFileName := util.GetFileName(filenameFullName)[len(prefix):]
-		//		if ok,err :=util.Contain(inSliceFileName,unsatisfy); err != nil {
-		//			log.Println(ok,err)
-		//			continue
-		//		}
-		//		log.Println(filenameFullName,ext,fullName,66)
-		//		//先解压文件；
-		//		log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt),99)
-		//		UnGzipFile(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt)) //xxx.gz
-		//
-		//		//UnGzipFile(fullName,getDestDir() + util.GetFileName(realNameGzIt)) //xxx.gz
-		//		//log.Println(fullName,util.GetFileName(filenameFullName),99)
-		//		log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar + "/" + util.GetFileName(realNameGzIt),77)
-		//		log.Println(dirv + util.GetFileName(filenameFullName),55)
-		//		findTextInFile(dirv + util.GetFileName(filenameFullName))
-		//	}
-		//}
 	}
 
 	gzipOK <- struct{}{}
