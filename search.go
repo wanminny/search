@@ -56,6 +56,9 @@ var (
 	//目标文件夹
 	//destDir = "/tar"
 
+	//中间的临时生成的日志目录
+	tmpLogDir = "tmp-log-dir"
+
 	//当前的目录的拷贝目录
 	copyDirTar = "copy-dir-tar"
 
@@ -83,7 +86,7 @@ var (
 func genarateFile(content []byte) {
 
 	keyWords := deviceId
-	destFileDir = "log/gen-" + keyWords + genFileTimeFormat() + ".log"
+	destFileDir = tmpLogDir + "/" + "gen-" + keyWords + genFileTimeFormat() + ".log"
 	//destFileDir = "log/gen-"+currentTimeFormat()+".log"
 
 	f, err := os.OpenFile(destFileDir, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
@@ -111,10 +114,10 @@ func gzipFile() {
 
 	//Compress(destGzipFileDir,destFileDir)
 
-	wantZipDir := util.GetCurrentDirectory() + "/log"
+	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
 
 	//压缩文件
-	ZipDir(wantZipDir, destGzipFileDir)
+	util.ZipDir(wantZipDir, destGzipFileDir)
 
 	//结束程序 信号
 	end <- 1
@@ -140,7 +143,7 @@ func initParameter() {
 
 func genFileTimeFormat() string  {
 	//默认当天
-	return time.Now().Format(TIMEFORMATZIP)
+	return time.Now().Format(TIMEFORMAT)
 }
 
 // 生成的压缩文件 便于区分
@@ -223,6 +226,11 @@ func mkdirs()  {
 		log.Println(err)
 	}
 
+	err = os.Mkdir(tmpLogDir,0755)
+	if err != nil{
+		log.Println(err)
+	}
+
 }
 
 func deldirs()  {
@@ -236,6 +244,12 @@ func deldirs()  {
 	if err != nil{
 		log.Println(err)
 	}
+
+	err =  os.RemoveAll(tmpLogDir)
+	if err != nil{
+		log.Println(err)
+	}
+
 }
 
 func getGlobalDirsName()  {
@@ -408,7 +422,7 @@ func main() {
 				destFile := util.GetCurrentDirectory() +"/"+ copyFileTar + "/" + util.GetFileName(realNameGzIt)+ ".gz"
 				util.SimpleCopyFile(destFile,realNameGzIt)
 
-				UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
+				util.UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
 				//log.Println(fullName,util.GetFileName(filenameFullName),99)
 				findTextInFile(getDestFileDir() + util.GetFileName(realNameGzIt))
 			}
@@ -434,8 +448,8 @@ func main() {
 			//复制文件 到指定目录
 			util.SimpleCopyFile(destFileName,fileName)
 			//先解压文件；
-			UnGzipFile(destFileName,tmpDir + util.GetFileName(realNameGzIt)) //xxx.gz
-			log.Println(8888)
+			util.UnGzipFile(destFileName,tmpDir + util.GetFileName(realNameGzIt)) //xxx.gz
+
 			findTextInFile(tmpDir + util.GetFileName(realNameGzIt))
 		}
 	}
@@ -444,7 +458,7 @@ func main() {
 	go gzipFile()
 	<-end
 
-	deldirs()
+	//deldirs()
 }
 
 
