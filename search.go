@@ -115,7 +115,7 @@ func gzipFile() {
 
 	//util.GetCurrentDirectory() + "/" + "result" + "/"
 
-	destGzipFileDir = util.GetCurrentDirectory() + "/" + zipResultDir + "/" + deviceId + currentTimeFormatZip()+".zip"
+	destGzipFileDir = util.GetCurrentDirectory() + "/" + zipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
 
 	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
 
