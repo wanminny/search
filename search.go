@@ -89,7 +89,7 @@ var (
 func genarateFile(content []byte) {
 
 	keyWords := deviceId
-	destFileDir = tmpLogDir + "/" + "gen-" + keyWords + genFileTimeFormat() + ".log"
+	destFileDir = tmpLogDir + "/" + "gen_" + keyWords + "_" + genFileTimeFormat() + ".log"
 	//destFileDir = "log/gen-"+currentTimeFormat()+".log"
 
 	f, err := os.OpenFile(destFileDir, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
