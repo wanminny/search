@@ -8,12 +8,14 @@ import (
 	"strings"
 	"time"
 	"gobible/logmanager/cli/http/services/util"
+	"strconv"
+	"math/rand"
 )
-
 
 const TIMEFORMAT = "20060102"
 const TIMEFORMATZIP = "20060102150405"
-const DIR = "/gopath/src/gobible/logmanager/cli/20181013"
+
+const DIR = "/gopath/src/gobible/logmanager/cli"
 
 var (
 	startTime string //开始时间
@@ -35,10 +37,10 @@ var (
 	destGzipFileDir string
 
 	//谁否可以压缩文件了
-	gzipOK chan struct{} = make(chan struct{}, 1)
+	gzipOK  = make(chan struct{}, 1)
 
 	//end
-	end chan int = make(chan int)
+	end  = make(chan int)
 
 	// 需要解压的文件的扩展名
 	extName = ".gz"
@@ -51,16 +53,21 @@ var (
 
 	dirsMap = make(map[string]bool)
 
-	//目标文件夹
-	//destDir = "/tar"
+	//中间的临时生成的日志目录
+	tmpLogDir = "tmp-log-dir"
 
 	//当前的目录的拷贝目录
-	copyDirTar = "./copy-dir-tar"
+	copyDirTar = "copy-dir-tar"
 
 	//当前的文件的拷贝目录
-	copyFileTar = "./copy-file-tar"
+	copyFileTar = "copy-file-tar"
 
-	fileMaps  = make(map[string]FileInfo)
+	//压缩文件生成的结果文件夹
+	zipResultDir = "download"
+
+	//随机数字目录
+	randInt64 int64 = 9876543210
+
 )
 
 type FileInfo struct {
@@ -74,62 +81,36 @@ type FileInfo struct {
 	empty bool
 }
 
-// 创建文件夹;处理完成后并删除！
-func mkDirs()  {
+var (
+	fileMaps  = make(map[string]FileInfo)
+)
 
-	//先删除 后创建
-	//err :=  os.Remove(copyDirTar)
-	//if err != nil{
-	//	log.Println(err)
-	//}
-	//err =  os.Remove(copyFileTar)
-	//if err != nil{
-	//	log.Println(err)
-	//}
-
-	err :=os.Mkdir(copyDirTar,0755)
-	if err != nil{
-		log.Println(err)
-	}
-	err = os.Mkdir(copyFileTar,0755)
-	if err != nil{
-		log.Println(err)
-	}
-
-	////最后是否要删除
-	//err =  os.Remove(copyDirTar)
-	//if err != nil{
-	//	log.Println(err)
-	//}
-	//err =  os.Remove(copyFileTar)
-	//if err != nil{
-	//	log.Println(err)
-	//}
+func randSeed()  {
+	rand.Seed(time.Now().UnixNano())
 }
 
-func delDirs()  {
-
-	//最后是否要删除
-	err :=  os.Remove(copyDirTar)
-	if err != nil{
-		log.Println(err)
-	}
-	err =  os.Remove(copyFileTar)
-	if err != nil{
-		log.Println(err)
-	}
+func genCopyDirTar() string {
+	return strconv.FormatInt(rand.Int63n(randInt64),0)
 }
 
-func genarateFile(content []byte) {
+func genCopyFileTar() string {
+	return strconv.FormatInt(rand.Int63n(randInt64),0)
+}
 
-	destFileDir = "log/gen-" + currentTimeFormat() + ".log"
+func genTmpLogDir() string {
+	return strconv.FormatInt(rand.Int63n(randInt64),0)
+}
+
+
+func genarateFile(content []byte,deviceId string) {
+
+	keyWords := deviceId
+	destFileDir = tmpLogDir + "/" + "gen_" + keyWords + "_" + genFileTimeFormat() + ".log"
 	//destFileDir = "log/gen-"+currentTimeFormat()+".log"
 
 	f, err := os.OpenFile(destFileDir, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
 
 	defer f.Close()
-
-	//log.Println(destFileDir)
 
 	if err != nil {
 		log.Fatal("生成目标文件异常:", err)
@@ -141,7 +122,42 @@ func genarateFile(content []byte) {
 
 }
 
-func timeDeltaAndDeviceIdOK(lineLog []byte) bool {
+//压缩文件
+func gzipFile(deviceId string) {
+	<-gzipOK
+
+	//destGzipFileDir = "/tar/" + currentTimeFormat() + ".tar.gz"
+	//deviceId 是查找原因 之前是准备仅仅定义设备
+
+	//util.GetCurrentDirectory() + "/" + "result" + "/"
+
+	destGzipFileDir = util.GetCurrentDirectory() + "/" + zipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
+
+	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
+
+	//压缩文件
+	util.ZipDir(wantZipDir, destGzipFileDir)
+
+	//结束程序 信号
+	end <- 1
+}
+
+func init() {
+	log.SetFlags(log.Llongfile | log.Ltime)
+}
+
+func genFileTimeFormat() string  {
+	//默认当天
+	return time.Now().Format(TIMEFORMAT)
+}
+
+// 生成的压缩文件 便于区分
+func currentTimeFormatZip() string {
+	//默认当天
+	return time.Now().Format(TIMEFORMATZIP)
+}
+
+func timeDeltaAndDeviceIdOK(lineLog []byte,deviceId string) bool {
 
 	logLine := string(lineLog)
 	//将condition 按照 空格拆分
@@ -156,13 +172,90 @@ func timeDeltaAndDeviceIdOK(lineLog []byte) bool {
 	}
 	//满足全部条件
 	if tip {
-		genarateFile(lineLog)
+		genarateFile(lineLog,deviceId)
 	}
 
 	return tip
 }
 
-func findTextInFile(fileName string) {
+func mkDirs()  {
+
+	if !util.PathExist(util.GetCurrentDirectory() + "/" + zipResultDir){
+		err :=os.Mkdir(zipResultDir,0755)
+		if err != nil{
+			log.Println(err)
+		}
+	}
+
+	err :=os.Mkdir(copyDirTar,0755)
+	if err != nil{
+		log.Println(err)
+	}
+	err = os.Mkdir(copyFileTar,0755)
+	if err != nil{
+		log.Println(err)
+	}
+
+	err = os.Mkdir(tmpLogDir,0755)
+	if err != nil{
+		log.Println(err)
+	}
+
+}
+
+func delDirs()  {
+
+	////最后是否要删除
+	err :=  os.RemoveAll(copyDirTar)
+	if err != nil{
+		log.Println(err)
+	}
+	err =  os.RemoveAll(copyFileTar)
+	if err != nil{
+		log.Println(err)
+	}
+
+	err =  os.RemoveAll(tmpLogDir)
+	if err != nil{
+		log.Println(err)
+	}
+
+}
+
+func getGlobalDirsName()  {
+
+	ts, err := time.Parse(TIMEFORMAT, startTime)
+	if err != nil {
+		log.Fatal("解析开始时间格式错误:", err, startTime)
+	}
+	te, err := time.Parse(TIMEFORMAT, endTime)
+	if err != nil {
+		log.Fatal("解析结束时间格式错误:", err, endTime)
+	}
+	if te.Before(ts) {
+		log.Fatal("日期不合法,结束日期比开始日期还早哦.")
+	}
+	if ts.Equal(te) { // 日期相等
+		dirs = append(dirs, startTime)
+	} else {
+		// 日期大于前者
+		dirs = append(dirs, startTime)
+		//log.Println(dirs)
+		ts = ts.Add(time.Hour * 24)
+		for te.After(ts) || te.Equal(ts){
+			dirs = append(dirs, ts.Format(TIMEFORMAT))
+			ts = ts.Add(time.Hour * 24)
+		}
+	}
+	log.Println(dirs)
+}
+
+func getDestFileDir() string {
+	return util.GetCurrentDirectory() +"/"+ copyFileTar + "/"
+}
+
+
+func findTextInFile(fileName,deviceId string) {
 
 	f, err := os.Open(fileName)
 	if err != nil {
@@ -189,31 +282,6 @@ func findTextInFile(fileName string) {
 			}
 		}
 		//log.Println(string(line),prefix)
-		timeDeltaAndDeviceIdOK(line)
+		timeDeltaAndDeviceIdOK(line,deviceId)
 	}
 }
-
-
-func getDestDir() string {
-
-	return util.GetCurrentDirectory() + "/"+ copyDirTar  //copyDirTar[2:] + "/"
-}
-
-
-func getDestFileDir() string {
-
-	return util.GetCurrentDirectory() +"/"+ copyFileTar[2:] + "/"
-}
-
-func currentTimeFormat() string {
-	//默认当天
-	return time.Now().Format(TIMEFORMAT)
-}
-
-
-// 生成的压缩文件 便于区分
-func currentTimeFormatZip() string {
-	//默认当天
-	return time.Now().Format(TIMEFORMATZIP)
-}
-

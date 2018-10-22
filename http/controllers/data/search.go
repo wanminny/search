@@ -37,7 +37,7 @@ func errResultJson(res http.ResponseWriter,msg string,err error)  {
 	//return
 }
 
-func getGlobalDirsName(res http.ResponseWriter,dirs []string,startTime,endTime string)  (err error)  {
+func getGlobalDirsName(res http.ResponseWriter,dirs *[]string,startTime,endTime string)  (err error)  {
 
 	ts, err := time.Parse(search.TIMEFORMAT, startTime)
 	if err != nil {
@@ -55,18 +55,17 @@ func getGlobalDirsName(res http.ResponseWriter,dirs []string,startTime,endTime s
 		return err
 	}
 	if ts.Equal(te) { // 日期相等
-		dirs = append(dirs, startTime)
+		*dirs = append(*dirs, startTime)
 	} else {
 		// 日期大于前者
-		dirs = append(dirs, startTime)
-		//log.Println(dirs)
+		*dirs = append(*dirs, startTime)
 		ts = ts.Add(time.Hour * 24)
 		for te.After(ts) || te.Equal(ts){
-			dirs = append(dirs, ts.Format(search.TIMEFORMAT))
+			*dirs = append(*dirs, ts.Format(search.TIMEFORMAT))
 			ts = ts.Add(time.Hour * 24)
 		}
 	}
-	log.Println(dirs)
+	log.Println(*dirs)
 	return
 }
 
@@ -74,7 +73,7 @@ func isProcessing(key string)  bool {
 
 	value,err := redis.GetValue(key)
 	if err != nil{  // nil returned 表示key不存在
-		log.Println(err)
+		//log.Println(err)
 		return false
 	}
 	if len(value) >0 {
@@ -105,7 +104,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		log.Println(err)
 	}
 	//log.Println(pickData)
-	//fmt.Fprint(res,string(content))
 
 	startTime := pickData.Start
 	endTime := pickData.End
@@ -128,29 +126,27 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	findCondition := utils.MD5(composeStr)
 	if isProcessing(findCondition) {
 		rlt := data.NewJson(0,"该查找任务已经提交,正在处理中,请问重复提交,谢谢！",nil)
-		fmt.Fprint(res,string(rlt))
+		res.Write([]byte(rlt))
 		return
 	}
 
 	//格式化的日志列表slice
 	dirs := make([]string,0)
 	//参数校验
-	err = getGlobalDirsName(res,dirs,startTime,endTime)
+	err = getGlobalDirsName(res,&dirs,startTime,endTime)
 	if err != nil{
 		return
 	}
+	//log.Println(11111)
+	go search.DoSearch(dirs,dir,findCondition,condition)
 
+	log.Println(222222)
 	//os.Exit(0)
-
-	search.DoSearch(dirs,dir,findCondition)
-
-	//go search.DoSearch(dirs,dir)
 
 	//提交任务后马上设置值
 	redis.SetValue(findCondition,composeStr)
-
 	rlt := data.NewJson(0,"文件处理中",nil)
-	fmt.Fprint(res,string(rlt))
-	return
+	res.Write([]byte(rlt))
+	log.Println("返回！")
 
 }

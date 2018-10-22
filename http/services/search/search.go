@@ -1,12 +1,10 @@
 package search
 
 import (
-	"path"
 	"fmt"
 	"os"
 	"bufio"
 	"io"
-	"io/ioutil"
 	"log"
 	"gobible/logmanager/cli/http/services/util"
 	"gobible/logmanager/cli/http/cache/redis"
@@ -16,28 +14,9 @@ func init()  {
 	log.SetFlags(log.Llongfile | log.Ltime)
 }
 
-//压缩文件
-func gzipFile() {
+func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 
-	<-gzipOK
-
-	//destGzipFileDir = "/tar/" + currentTimeFormat() + ".tar.gz"
-	destGzipFileDir = currentTimeFormatZip()+".zip"
-
-	//Compress(destGzipFileDir,destFileDir)
-	//log.Println(GetCurrentDirectory())
-
-	wantZipDir := util.GetCurrentDirectory() + "/log"
-
-	//压缩文件
-	util.ZipDir(wantZipDir, destGzipFileDir)
-
-	//结束程序 信号
-	end <- 1
-}
-
-func DoSearch(dirs []string,directory,findCondition string)  {
-
+	randSeed()
 	mkDirs()
 
 	for _, dirv := range dirs {
@@ -81,9 +60,6 @@ func DoSearch(dirs []string,directory,findCondition string)  {
 		}
 	}
 
-	//fmt.Printf("%#v\n",fileMaps)
-	//os.Exit(1)
-
 	// 获取 不满足 条件的slice
 	unsatisfy := make([]string,0)
 	for k,v := range fileMaps{
@@ -91,13 +67,16 @@ func DoSearch(dirs []string,directory,findCondition string)  {
 			unsatisfy = append(unsatisfy,k)
 		}
 	}
+
 	fmt.Printf("%#v",unsatisfy)
+	fmt.Printf("%#v\n",fileMaps)
+	//os.Exit(1)
 
 	for k,v := range fileMaps{
 		//先处理本地的所有的已知的文件；【包括两种情况 1.是有没有扩展名称的； 2.一种是有扩展名称的】
 		realNameIte := util.GetCurrentDirectory() + "/" + prefix + k
 		realNameGzIt := util.GetCurrentDirectory() + "/" + prefix + k + extName
-		if !v.empty{
+		if !v.empty{  //非空 即不需要去指定目录去查找的情况
 			//一种情况是 非压缩
 			if !v.gz {
 				//文本文件
@@ -120,76 +99,56 @@ func DoSearch(dirs []string,directory,findCondition string)  {
 							//<-end
 							//return
 						} else {
-							log.Println(line, prefix, err)
+							log.Fatal(line, prefix, err)
 						}
 					}
-					//log.Println(string(line),prefix)
-					timeDeltaAndDeviceIdOK(line)
+					timeDeltaAndDeviceIdOK(line,deviceId)
 				}
 			} else{   ////一种情况是压缩 v.gz == true
 
 				//先拷贝在解压;然后在查找；
-				destFile := util.GetCurrentDirectory() +"/"+ copyFileTar[2:] + "/" + util.GetFileName(realNameGzIt)+ ".gz"
+				destFile := util.GetCurrentDirectory() +"/"+ copyFileTar + "/" + util.GetFileName(realNameGzIt)+ ".gz"
 				util.SimpleCopyFile(destFile,realNameGzIt)
 
-				util.UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar[2:] +"/" + util.GetFileName(realNameGzIt)) //xxx.gz
-				//log.Println(fullName,util.GetFileName(filenameFullName),99)
-				findTextInFile(getDestFileDir() + util.GetFileName(realNameGzIt))
+				util.UnGzipFile(destFile,util.GetCurrentDirectory() +"/"+ copyFileTar +"/" + util.GetFileName(realNameGzIt))
+
+				findTextInFile(getDestFileDir() + util.GetFileName(realNameGzIt),deviceId)
 			}
 		}
 	}
 
 	// 先把前面满足条件的一次性跑完；
-	// 这里专门处理不满足条件的；  即这里是所有结构体为空的情况empty= true
+	// 这里专门处理不满足条件的；  即这里是所有结构体为空的情况empty= true 【去指定目录去查找的情况】
 	for _,v := range unsatisfy{
 
-		realNameGzIt := util.GetCurrentDirectory() + "/" + prefix + v + extName
-
+		realNameGzIt := directory + "/" + prefix + v + extName
 		//是当前目录没有的；需要去指定目录 处理的
 		log.Println("开始===>去指定目录中查找.")
-
 		//直接将制定目录的.gz文件解压到指定文件然后查找处理
-		//遍历所有的目录
-		util.Copy(directory,getDestDir())
-		log.Println(getDestDir())
-		dirv := getDestDir()
-		files, err := ioutil.ReadDir(dirv)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		for _, v := range files {
-			filenameFullName := path.Base(v.Name())
-			fullName := dirv + "/" + v.Name()
-			ext := path.Ext(filenameFullName)
 
-			if ext == extName {
-				//文件名称是满足格式的压缩文件才需要处理
-				log.Println(util.GetFileName(filenameFullName),44444)
-				inSliceFileName := util.GetFileName(filenameFullName)[len(prefix):]
-				if ok,err :=util.Contain(inSliceFileName,unsatisfy); err != nil {
-					log.Println(ok,err)
-					continue
-				}
-				log.Println(filenameFullName,ext,fullName,66)
-				//先解压文件；
-				util.UnGzipFile(fullName,util.GetCurrentDirectory() + "/" + copyDirTar[2:] + "/" + util.GetFileName(realNameGzIt)) //xxx.gz
+		fileName := directory + "/" + util.GetFileName(realNameGzIt) + extName
 
-				//UnGzipFile(fullName,getDestDir() + util.GetFileName(realNameGzIt)) //xxx.gz
-				//log.Println(fullName,util.GetFileName(filenameFullName),99)
-				log.Println(fullName,util.GetCurrentDirectory() + "/" + copyDirTar[2:] + "/" + util.GetFileName(realNameGzIt),77)
-				log.Println(dirv+ "/" + util.GetFileName(filenameFullName),55)
-				findTextInFile(dirv+ "/" + util.GetFileName(filenameFullName))
-			}
+		tmpDir := util.GetCurrentDirectory() + "/" + copyDirTar + "/"
+
+		destFileName := tmpDir +  util.GetFileName(realNameGzIt) + extName
+
+		if util.PathExist(fileName) {
+			//复制文件 到指定目录
+			util.SimpleCopyFile(destFileName,fileName)
+			//先解压文件；
+			util.UnGzipFile(destFileName,tmpDir + util.GetFileName(realNameGzIt))
+
+			findTextInFile(tmpDir + util.GetFileName(realNameGzIt),deviceId)
 		}
 	}
+
 	gzipOK <- struct{}{}
-	go gzipFile()
+	go gzipFile(deviceId)
 	<-end
 
-	//删除目录
-	//delDirs()
+	delDirs()
 	//处理完成后清空key
 	redis.DelKey(findCondition)
 
 }
+

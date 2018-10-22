@@ -16,10 +16,8 @@ var (
 func InitRouter()  {
 
 	//主页
-	Router.GET("/",data.Search)
-
 	//文件目录
-	Router.GET("/catalog",file.Content)
+	Router.GET("/",file.Content)
 
 	//http://localhost:8080/log/ 可以成功！
 	// 注释： *filepath是固定的！否则报错
