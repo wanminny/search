@@ -461,7 +461,7 @@ func main() {
 	go gzipFile()
 	<-end
 
-	//deldirs()
+	deldirs()
 }
 
 
