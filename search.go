@@ -320,7 +320,9 @@ func getGlobalDirsName()  {
 
 func getDestDir() string {
 
-	return util.GetCurrentDirectory() + "/"+ copyDirTar
+	//return util.GetCurrentDirectory() + "/"+ copyDirTar
+	return util.GetCurrentDirectory() + "/"+ copyDirTar[2:] + "/"
+
 }
 
 
