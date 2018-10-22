@@ -39,10 +39,10 @@ var (
 	destGzipFileDir string
 
 	//谁否可以压缩文件了
-	gzipOK chan struct{} = make(chan struct{}, 1)
+	gzipOK  = make(chan struct{}, 1)
 
 	//end
-	end chan int = make(chan int)
+	end  = make(chan int)
 
 	// 需要解压的文件的扩展名
 	extName = ".gz"
@@ -149,16 +149,6 @@ func genFileTimeFormat() string  {
 func currentTimeFormatZip() string {
 	//默认当天
 	return time.Now().Format(TIMEFORMATZIP)
-}
-
-func endTimeFormat() string {
-
-	now := time.Now()
-	endT, err := time.ParseDuration(delta)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return now.Add(endT).Format(TIMEFORMAT)
 }
 
 //格式化使用方式：
