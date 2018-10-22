@@ -85,7 +85,8 @@ var (
 
 func genarateFile(content []byte) {
 
-	destFileDir = "log/gen-" + currentTimeFormat() + ".log"
+	keyWords := deviceId
+	destFileDir = "log/gen-" + keyWords + currentTimeFormat() + ".log"
 	//destFileDir = "log/gen-"+currentTimeFormat()+".log"
 
 	f, err := os.OpenFile(destFileDir, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
@@ -109,7 +110,7 @@ func gzipFile() {
 	<-gzipOK
 
 	//destGzipFileDir = "/tar/" + currentTimeFormat() + ".tar.gz"
-	destGzipFileDir = currentTimeFormatZip()+".zip"
+	destGzipFileDir = deviceId + currentTimeFormatZip()+".zip"
 
 	//Compress(destGzipFileDir,destFileDir)
 	//log.Println(GetCurrentDirectory())
@@ -321,7 +322,7 @@ func getGlobalDirsName()  {
 func getDestDir() string {
 
 	//return util.GetCurrentDirectory() + "/"+ copyDirTar
-	return util.GetCurrentDirectory() + "/"+ copyDirTar[2:] + "/"
+	return util.GetCurrentDirectory() + "/"+ copyDirTar[2:] 
 
 }
 
@@ -475,7 +476,7 @@ func main() {
 
 				if ext == extName {
 					//文件名称是满足格式的压缩文件才需要处理
-					log.Println(util.GetFileName(filenameFullName),44444)
+					log.Println(util.GetFileName(filenameFullName),44)
 					inSliceFileName := util.GetFileName(filenameFullName)[len(prefix):]
 					if ok,err :=util.Contain(inSliceFileName,unsatisfy); err != nil {
 						log.Println(ok,err)
