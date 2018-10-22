@@ -15,15 +15,11 @@ import (
 	"errors"
 )
 
-
 func Search(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
-
 	rlt := data.NewJson(0,"search service",nil)
 	fmt.Fprint(res,string(rlt))
 	return
-
 }
-
 
 func errResultJson(res http.ResponseWriter,msg string,err error)  {
 
@@ -103,7 +99,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	if err != nil{
 		log.Println(err)
 	}
-	//log.Println(pickData)
 
 	startTime := pickData.Start
 	endTime := pickData.End
@@ -137,16 +132,12 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	if err != nil{
 		return
 	}
-	//log.Println(11111)
-	go search.DoSearch(dirs,dir,findCondition,condition)
 
-	log.Println(222222)
-	//os.Exit(0)
+	go search.DoSearch(dirs,dir,findCondition,condition)
 
 	//提交任务后马上设置值
 	redis.SetValue(findCondition,composeStr)
 	rlt := data.NewJson(0,"文件处理中",nil)
 	res.Write([]byte(rlt))
-	log.Println("返回！")
 
 }

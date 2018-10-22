@@ -1,7 +1,6 @@
 package search
 
 import (
-	"fmt"
 	"os"
 	"bufio"
 	"io"
@@ -17,6 +16,7 @@ func init()  {
 func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 
 	randSeed()
+	initDir()
 	mkDirs()
 
 	for _, dirv := range dirs {
@@ -68,8 +68,8 @@ func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 		}
 	}
 
-	fmt.Printf("%#v",unsatisfy)
-	fmt.Printf("%#v\n",fileMaps)
+	//fmt.Printf("%#v",unsatisfy)
+	//fmt.Printf("%#v\n",fileMaps)
 	//os.Exit(1)
 
 	for k,v := range fileMaps{

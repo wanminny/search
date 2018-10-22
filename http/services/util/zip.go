@@ -49,7 +49,6 @@ func ZipDir(dir, zipFile string) {
 // gzip 文件 解压缩；
 func UnGzipFile(gzipFile string,destDirFile string)  {
 
-	log.Println(111)
 	// file read
 	fr, err := os.Open(gzipFile)
 	if err != nil {

@@ -89,16 +89,25 @@ func randSeed()  {
 	rand.Seed(time.Now().UnixNano())
 }
 
+
+func initDir()  {
+	copyDirTar = genCopyDirTar()
+	copyFileTar = genCopyFileTar()
+	tmpLogDir = genTmpLogDir()
+	log.Println(copyFileTar,copyDirTar,tmpLogDir)
+}
+
+
 func genCopyDirTar() string {
-	return strconv.FormatInt(rand.Int63n(randInt64),0)
+	return strconv.FormatInt(rand.Int63n(randInt64),10)
 }
 
 func genCopyFileTar() string {
-	return strconv.FormatInt(rand.Int63n(randInt64),0)
+	return strconv.FormatInt(rand.Int63n(randInt64),10)
 }
 
 func genTmpLogDir() string {
-	return strconv.FormatInt(rand.Int63n(randInt64),0)
+	return strconv.FormatInt(rand.Int63n(randInt64),10)
 }
 
 
