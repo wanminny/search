@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 // Copy copies src to dest, doesn't matter if src is a directory or a file
@@ -100,18 +100,18 @@ func SimpleCopyFile(destFile string,srcFile string){
 
 	from, err := os.Open(srcFile)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	defer from.Close()
 
 	to, err := os.OpenFile(destFile, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	defer to.Close()
 
 	_, err = io.Copy(to, from)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 }

@@ -6,6 +6,8 @@ import (
 	"gobible/logmanager/cli/http/controllers/task"
 	"gobible/logmanager/cli/http/controllers/file"
 	"net/http"
+	"os"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -32,5 +34,14 @@ func InitRouter()  {
 
 	//查询某个任务是否还在运行
 	Router.GET("/list/:no",task.CheckIsRunning)
+
+}
+
+func InitLog()  {
+
+	f, _ := os.OpenFile("server.log", os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_APPEND,0755)
+
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+	logrus.SetOutput(f)
 
 }

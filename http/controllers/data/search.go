@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 	"fmt"
-	"log"
 	"io/ioutil"
 	"gobible/logmanager/cli/http/models/data"
 	"encoding/json"
@@ -13,6 +12,7 @@ import (
 	"gobible/logmanager/cli/http/cache/redis"
 	"gobible/logmanager/cli/http/utils"
 	"errors"
+	"github.com/sirupsen/logrus"
 )
 
 func Search(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
@@ -61,7 +61,7 @@ func getGlobalDirsName(res http.ResponseWriter,dirs *[]string,startTime,endTime 
 			ts = ts.Add(time.Hour * 24)
 		}
 	}
-	log.Println(*dirs)
+	logrus.Println(*dirs)
 	return
 }
 
@@ -88,7 +88,7 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 
 	content,err := ioutil.ReadAll(req.Body)
 	if err !=nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 	defer req.Body.Close()
 	//log.Println("body :",string(content))
@@ -97,7 +97,7 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 
 	err = json.Unmarshal(content,&pickData)
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 
 	startTime := pickData.Start

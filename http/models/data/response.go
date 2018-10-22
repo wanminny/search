@@ -2,7 +2,7 @@ package data
 
 import (
 	"encoding/json"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 // 返回Result
@@ -21,7 +21,7 @@ func NewJson(code int,msg string,data interface{}) string {
 	}
 	rlt,err := json.Marshal(Result{Code:code,Message:msg,Data:data})
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 	return string(rlt)
 }

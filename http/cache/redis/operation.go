@@ -3,10 +3,14 @@ package redis
 import (
 	"time"
 	"github.com/garyburd/redigo/redis"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 const REDIS_HOST  =  "127.0.0.1:6379"
+
+//const REDIS_HOST  =  "10.0.3.11:6379"
+
+//const PASSWD  = "export-redis-01:3Ndy4tcWv3"
 
 const REDIS_DB = 6
 
@@ -24,6 +28,12 @@ func init()  {
 			if err != nil {
 				return nil, err
 			}
+
+			//if _, err := c.Do("AUTH", PASSWD); err != nil {
+			//	c.Close()
+			//	return nil, err
+			//}
+
 			// 选择db
 			c.Do("SELECT", REDIS_DB)
 			return c, nil
@@ -47,7 +57,7 @@ func SetValue(key string,value string)  {
 	_, err := conn.Do("SET", key, value)
 
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 
 }
@@ -57,7 +67,7 @@ func DelKey(key string)  {
 	conn := RedisClient.Get()
 	_, err := conn.Do("DEL", key)
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 }
 

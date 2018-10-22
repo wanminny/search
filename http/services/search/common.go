@@ -4,12 +4,12 @@ import (
 	"os"
 	"bufio"
 	"io"
-	"log"
 	"strings"
 	"time"
 	"gobible/logmanager/cli/http/services/util"
 	"strconv"
 	"math/rand"
+	"github.com/sirupsen/logrus"
 )
 
 const TIMEFORMAT = "20060102"
@@ -94,7 +94,7 @@ func initDir()  {
 	copyDirTar = genCopyDirTar()
 	copyFileTar = genCopyFileTar()
 	tmpLogDir = genTmpLogDir()
-	log.Println(copyFileTar,copyDirTar,tmpLogDir)
+	logrus.Println(copyFileTar,copyDirTar,tmpLogDir)
 }
 
 
@@ -122,7 +122,7 @@ func genarateFile(content []byte,deviceId string) {
 	defer f.Close()
 
 	if err != nil {
-		log.Fatal("生成目标文件异常:", err)
+		logrus.Fatal("生成目标文件异常:", err)
 	}
 
 	//添加换行
@@ -152,7 +152,8 @@ func gzipFile(deviceId string) {
 }
 
 func init() {
-	log.SetFlags(log.Llongfile | log.Ltime)
+	//logrus.SetFlags(log.Llongfile | log.Ltime)
+	//logrus.SetFormatter()
 }
 
 func genFileTimeFormat() string  {
@@ -171,7 +172,7 @@ func timeDeltaAndDeviceIdOK(lineLog []byte,deviceId string) bool {
 	logLine := string(lineLog)
 	//将condition 按照 空格拆分
 	conds := strings.Split(strings.Trim(deviceId, " "), " ")
-	//log.Println(conds)
+	//logrus.Println(conds)
 	tip := true
 	for _, content := range conds {
 		if !strings.Contains(logLine, content) {
@@ -192,22 +193,22 @@ func mkDirs()  {
 	if !util.PathExist(util.GetCurrentDirectory() + "/" + zipResultDir){
 		err :=os.Mkdir(zipResultDir,0755)
 		if err != nil{
-			log.Println(err)
+			logrus.Println(err)
 		}
 	}
 
 	err :=os.Mkdir(copyDirTar,0755)
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 	err = os.Mkdir(copyFileTar,0755)
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 
 	err = os.Mkdir(tmpLogDir,0755)
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 
 }
@@ -217,16 +218,16 @@ func delDirs()  {
 	////最后是否要删除
 	err :=  os.RemoveAll(copyDirTar)
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 	err =  os.RemoveAll(copyFileTar)
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 
 	err =  os.RemoveAll(tmpLogDir)
 	if err != nil{
-		log.Println(err)
+		logrus.Println(err)
 	}
 
 }
@@ -241,7 +242,7 @@ func findTextInFile(fileName,deviceId string) {
 
 	f, err := os.Open(fileName)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	defer f.Close()
 
@@ -252,7 +253,7 @@ func findTextInFile(fileName,deviceId string) {
 
 		if err != nil {
 			if err == io.EOF {
-				log.Println("处理文件 压缩文件 结束了,ok !")
+				logrus.Println("处理文件 压缩文件 结束了,ok !")
 				break
 				////通知可以压缩文件了
 				//gzipOK <- struct{}{}
@@ -260,10 +261,9 @@ func findTextInFile(fileName,deviceId string) {
 				//<-end
 				//return
 			} else {
-				log.Fatal(line, prefix, err)
+				logrus.Fatal(line, prefix, err)
 			}
 		}
-		//log.Println(string(line),prefix)
 		timeDeltaAndDeviceIdOK(line,deviceId)
 	}
 }

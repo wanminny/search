@@ -4,13 +4,13 @@ import (
 	"os"
 	"bufio"
 	"io"
-	"log"
 	"gobible/logmanager/cli/http/services/util"
 	"gobible/logmanager/cli/http/cache/redis"
+	"github.com/sirupsen/logrus"
 )
 
 func init()  {
-	log.SetFlags(log.Llongfile | log.Ltime)
+	//log.SetFlags(log.Llongfile | log.Ltime)
 }
 
 func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
@@ -22,7 +22,6 @@ func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 	for _, dirv := range dirs {
 		realName := util.GetCurrentDirectory() + "/" + prefix + dirv
 		realNameGz := util.GetCurrentDirectory() + "/" + prefix + dirv + extName
-		//log.Println(realName, realNameGz, util.PathExist(realName))
 
 		//如果不带扩展名gz的文件存在 认为该文件在当前目录 【如果同时存在既有压缩的又有不压缩的；则以不压缩的为准；gz的忽略
 		// 如果没有非压缩的文件 则走下面的流程 以有压缩的为准】
@@ -83,7 +82,7 @@ func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 				f, err := os.Open(realNameIte)
 				if err != nil {
 					//文件已经存在
-					log.Println(err)
+					logrus.Println(err)
 				}
 				reader := bufio.NewReader(f)
 				for {
@@ -91,7 +90,7 @@ func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 
 					if err != nil {
 						if err == io.EOF {
-							log.Println("非压缩 处理文件结束了,ok !")
+							logrus.Println("非压缩 处理文件结束了,ok !")
 							break
 							//通知可以压缩文件了
 							//gzipOK <- struct{}{}
@@ -99,7 +98,7 @@ func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 							//<-end
 							//return
 						} else {
-							log.Fatal(line, prefix, err)
+							logrus.Fatal(line, prefix, err)
 						}
 					}
 					timeDeltaAndDeviceIdOK(line,deviceId)
@@ -123,7 +122,7 @@ func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 
 		realNameGzIt := directory + "/" + prefix + v + extName
 		//是当前目录没有的；需要去指定目录 处理的
-		log.Println("开始===>去指定目录中查找.")
+		logrus.Println("开始===>去指定目录中查找.")
 		//直接将制定目录的.gz文件解压到指定文件然后查找处理
 
 		fileName := directory + "/" + util.GetFileName(realNameGzIt) + extName

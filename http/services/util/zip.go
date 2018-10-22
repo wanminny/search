@@ -4,18 +4,17 @@ import (
 	"os"
 	"path/filepath"
 	"io"
-	"log"
-
 	"archive/zip"
 	"compress/gzip"
 	"bufio"
+	"github.com/sirupsen/logrus"
 )
 
 func ZipDir(dir, zipFile string) {
 
 	fz, err := os.Create(zipFile)
 	if err != nil {
-		log.Fatalf("Create zip file failed: %s\n", err.Error())
+		logrus.Fatalf("Create zip file failed: %s\n", err.Error())
 	}
 	defer fz.Close()
 
@@ -26,18 +25,18 @@ func ZipDir(dir, zipFile string) {
 		if !info.IsDir() {
 			fDest, err := w.Create(path[len(dir)+1:])
 			if err != nil {
-				log.Printf("Create failed: %s\n", err.Error())
+				logrus.Printf("Create failed: %s\n", err.Error())
 				return nil
 			}
 			fSrc, err := os.Open(path)
 			if err != nil {
-				log.Printf("Open failed: %s\n", err.Error())
+				logrus.Printf("Open failed: %s\n", err.Error())
 				return nil
 			}
 			defer fSrc.Close()
 			_, err = io.Copy(fDest, fSrc)
 			if err != nil {
-				log.Printf("Copy failed: %s\n", err.Error())
+				logrus.Printf("Copy failed: %s\n", err.Error())
 				return nil
 			}
 		}
@@ -63,7 +62,6 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 	}
 
 	defer gr.Close()
-	//log.Println(2222)
 	reader := bufio.NewReader(gr)
 
 	// 打开文件
@@ -76,9 +74,8 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 
 	for {
 		line,prefix,err :=reader.ReadLine()
-		//log.Println(line)
 		if err != nil{
-			log.Println(err,line,prefix)
+			logrus.Println(err,line,prefix)
 			if err == io.EOF{
 				break
 			}
@@ -92,5 +89,5 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 			panic(err)
 		}
 	}
-	log.Println("ok!")
+	logrus.Println("ok!")
 }

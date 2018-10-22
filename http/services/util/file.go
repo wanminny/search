@@ -4,14 +4,14 @@ import (
 	"path"
 	"strings"
 	"os"
-	"log"
 	"path/filepath"
+	"github.com/sirupsen/logrus"
 )
 
 func GetCurrentDirectory() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0])) //返回绝对路径  filepath.Dir(os.Args[0])去除最后一个元素的路径
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	return strings.Replace(dir, "\\", "/", -1) //将\替换成/
 }
@@ -31,7 +31,6 @@ func GetFileName(fullFilename string)  string {
 
 	var filenameOnly string
 	filenameOnly = strings.TrimSuffix(filenameWithSuffix, fileSuffix)//获取文件名
-	//fmt.Println("filenameOnly =", filenameOnly)
 
 	return filenameOnly
 }
