@@ -73,11 +73,9 @@ func UnGzipFile(gzipFile string,destDirFile string)  {
 	}
 	defer fw.Close()
 
-	n := 0
 	for {
 		line,prefix,err :=reader.ReadLine()
 		//log.Println(line)
-		n++
 		if err != nil{
 			log.Println(err,line,prefix)
 			if err == io.EOF{
