@@ -1,24 +1,32 @@
 package main
 
 import (
-	"gobible/logmanager/cli/http/controllers"
 	"net/http"
 	"log"
+	"gobible/logmanager/cli/http/controllers"
+	"github.com/julienschmidt/httprouter"
 )
 
 var (
-
-	//G_DownLoadDir = ""
+	Router  *httprouter.Router
 )
+
+func GetGlobalRouter() *httprouter.Router  {
+	Router = httprouter.New()
+	return Router
+}
+
 
 func main()  {
 
-	controllers.InitRouter()
+	GetGlobalRouter()
+
+	controllers.InitRouter(Router)
 
 	controllers.InitLog()
 
 	log.Println("service start on :8080,ok!")
 
-	log.Fatal(http.ListenAndServe(":8080",controllers.Router))
+	log.Fatal(http.ListenAndServe(":8080",Router))
 
 }

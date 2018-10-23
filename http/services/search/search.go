@@ -13,7 +13,7 @@ func init()  {
 	//log.SetFlags(log.Llongfile | log.Ltime)
 }
 
-func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
+func DoSearch(dirs []string,directory,findCondition,deviceId,ZipResultDir string)  {
 
 	randSeed()
 	initDir()
@@ -142,7 +142,7 @@ func DoSearch(dirs []string,directory,findCondition,deviceId string)  {
 	}
 
 	gzipOK <- struct{}{}
-	go gzipFile(deviceId)
+	go gzipFile(deviceId,ZipResultDir)
 	<-end
 
 	delDirs()

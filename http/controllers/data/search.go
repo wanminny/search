@@ -112,7 +112,8 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	if len(startTime) == 0 ||
 		len(endTime) == 0 ||
 		len(condition) == 0 ||
-		len(dir) == 0 {
+		len(dir) == 0 ||
+		len(down) == 0 {
 		rlt := data.NewJson(1,"参数不合法",nil)
 		fmt.Fprint(res,string(rlt))
 		return
@@ -151,7 +152,9 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		return
 	}
 
-	go search.DoSearch(dirs,dir,findCondition,condition)
+	//static.SearchdirRouter(down)
+
+	go search.DoSearch(dirs,dir,findCondition,condition,down)
 
 	//提交任务后马上设置值
 	redis.SetValue(findCondition,composeStr)
