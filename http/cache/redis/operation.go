@@ -3,41 +3,89 @@ package redis
 import (
 	"time"
 	"github.com/garyburd/redigo/redis"
+	"log"
+	"io/ioutil"
+	"encoding/json"
 	"github.com/sirupsen/logrus"
 )
 
-//const REDIS_HOST  =  "127.0.0.1:6379"
-
-const REDIS_HOST  =  "10.0.3.11:6379"
-
-const PASSWD  = "export-redis-01:3Ndy4tcWv3"
-
-const REDIS_DB = 6
 
 var (
 	RedisClient *redis.Pool
 )
 
-func init()  {
+type ConfigContent struct {
+	RedisHost string `json:"redis_host"`
+	RedisPort string `json:"redis_port"`
+	RedisDb string `json:"redis_db"`
+	RedisPassWd string `json:"redis_pass_wd"`
+}
+
+
+func checkRedisConf() (config * ConfigContent) {
+
+	configC := &ConfigContent{}
+	byteC,err := ioutil.ReadFile("./config/config.json")
+
+	if err != nil{
+		log.Fatal(err)
+		return
+	}
+	err = json.Unmarshal(byteC,configC)
+	if err != nil{
+		log.Fatal(err)
+		return
+	}
+
+	return configC
+}
+
+func InitPool()  {
+
+	configC := checkRedisConf()
+
+	log.Println(222,configC)
+
 	RedisClient = &redis.Pool{
 		MaxIdle:     10,
 		MaxActive:   0,
 		IdleTimeout: 180 * time.Second,
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", REDIS_HOST)
+			c, err := redis.Dial("tcp", configC.RedisHost + ":"+ configC.RedisPort)
 			if err != nil {
+				log.Fatal(err)
 				return nil, err
 			}
-
-			if _, err := c.Do("AUTH", PASSWD); err != nil {
-				c.Close()
-				return nil, err
+			
+			//自由填写了密码才去拨号
+			if len(configC.RedisPassWd) >0 {
+				if _, err := c.Do("AUTH", configC.RedisPassWd); err != nil {
+					c.Close()
+					log.Fatal(err)
+					return nil, err
+				}
 			}
 
 			// 选择db
-			c.Do("SELECT", REDIS_DB)
+			c.Do("SELECT", configC.RedisDb)
 			return c, nil
 		},
+	}
+}
+
+
+func init()  {
+
+	InitPool()
+}
+
+
+func PING(){
+	//获取值
+	conn := RedisClient.Get()
+	_,err := redis.String(conn.Do("PING"))
+	if err != nil{
+		log.Fatal(err)
 	}
 }
 

@@ -8,6 +8,9 @@ import (
 	"net/http"
 	"os"
 	"github.com/sirupsen/logrus"
+	"gobible/logmanager/cli/util"
+	"gobible/logmanager/cli/http/services/search"
+	"gobible/logmanager/cli/http/cache/redis"
 )
 
 var (
@@ -37,11 +40,36 @@ func InitRouter()  {
 
 }
 
+func initDir()  {
+
+	//初始化服务器日志生成的目录；便于查看情况
+	if !util.PathExist(util.GetCurrentDirectory() + "/" + search.ZipResultDir){
+		err :=os.Mkdir(search.ZipResultDir,0755)
+		if err != nil{
+			logrus.Println(err)
+		}
+	}
+
+	//初始化服务器日志生成的目录；便于查看情况
+	if !util.PathExist(util.GetCurrentDirectory() + "/" + search.ServerLogDir){
+		err :=os.Mkdir(search.ServerLogDir,0755)
+		if err != nil{
+			logrus.Println(err)
+		}
+	}
+
+}
+
 func InitLog()  {
 
-	f, _ := os.OpenFile("server.log", os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_APPEND,0755)
+	f, _ := os.OpenFile(util.GetCurrentDirectory() + "/" + search.ServerLogDir + "/"+"server.log", os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_APPEND,0755)
 
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetOutput(f)
+
+	initDir()
+
+	//读取配置并 检查是否可以连上redis服务器
+	redis.PING()
 
 }

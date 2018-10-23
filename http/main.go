@@ -3,7 +3,6 @@ package main
 import (
 	"gobible/logmanager/cli/http/controllers"
 	"net/http"
-	"github.com/sirupsen/logrus"
 	"log"
 )
 
@@ -15,6 +14,6 @@ func main()  {
 
 	log.Println("service start on :8080,ok!")
 
-	logrus.Fatal(http.ListenAndServe(":8080",controllers.Router))
+	log.Fatal(http.ListenAndServe(":8080",controllers.Router))
 
 }

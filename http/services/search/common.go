@@ -63,7 +63,10 @@ var (
 	copyFileTar = "copy-file-tar"
 
 	//压缩文件生成的结果文件夹
-	zipResultDir = "download"
+	ZipResultDir = "download"
+
+	//压缩文件生成的结果文件夹
+	ServerLogDir = "server_log"
 
 	//随机数字目录
 	randInt64 int64 = 9876543210
@@ -140,7 +143,7 @@ func gzipFile(deviceId string) {
 
 	//util.GetCurrentDirectory() + "/" + "result" + "/"
 
-	destGzipFileDir = util.GetCurrentDirectory() + "/" + zipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
+	destGzipFileDir = util.GetCurrentDirectory() + "/" + ZipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
 
 	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
 
@@ -190,8 +193,8 @@ func timeDeltaAndDeviceIdOK(lineLog []byte,deviceId string) bool {
 
 func mkDirs()  {
 
-	if !util.PathExist(util.GetCurrentDirectory() + "/" + zipResultDir){
-		err :=os.Mkdir(zipResultDir,0755)
+	if !util.PathExist(util.GetCurrentDirectory() + "/" + ZipResultDir){
+		err :=os.Mkdir(ZipResultDir,0755)
 		if err != nil{
 			logrus.Println(err)
 		}
