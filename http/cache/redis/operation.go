@@ -6,11 +6,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const REDIS_HOST  =  "127.0.0.1:6379"
+//const REDIS_HOST  =  "127.0.0.1:6379"
 
-//const REDIS_HOST  =  "10.0.3.11:6379"
+const REDIS_HOST  =  "10.0.3.11:6379"
 
-//const PASSWD  = "export-redis-01:3Ndy4tcWv3"
+const PASSWD  = "export-redis-01:3Ndy4tcWv3"
 
 const REDIS_DB = 6
 
@@ -29,10 +29,10 @@ func init()  {
 				return nil, err
 			}
 
-			//if _, err := c.Do("AUTH", PASSWD); err != nil {
-			//	c.Close()
-			//	return nil, err
-			//}
+			if _, err := c.Do("AUTH", PASSWD); err != nil {
+				c.Close()
+				return nil, err
+			}
 
 			// 选择db
 			c.Do("SELECT", REDIS_DB)
