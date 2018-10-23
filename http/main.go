@@ -6,6 +6,11 @@ import (
 	"log"
 )
 
+var (
+
+	//G_DownLoadDir = ""
+)
+
 func main()  {
 
 	controllers.InitRouter()

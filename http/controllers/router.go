@@ -27,7 +27,10 @@ func InitRouter()  {
 	//http://localhost:8080/log/ 可以成功！
 	// 注释： *filepath是固定的！否则报错
 	//文件目录列表服务
-	Router.ServeFiles("/log/*filepath",http.Dir("download"))
+	Router.ServeFiles("/log/*filepath",http.Dir(search.ZipResultDir))
+
+	//服务器列表目录 [服务器诊断日志]
+	Router.ServeFiles("/server_log/*filepath",http.Dir(search.ServerLogDir))
 
 	//下发任务
 	Router.POST("/data/pick",data.Pick)
