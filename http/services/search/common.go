@@ -66,6 +66,7 @@ var (
 	//随机数字目录
 	randInt64 int64 = 9876543210
 
+	ZipDirSignal = make(chan string)
 )
 
 type FileInfo struct {

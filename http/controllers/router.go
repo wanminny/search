@@ -11,8 +11,29 @@ import (
 	"gobible/logmanager/cli/util"
 	"gobible/logmanager/cli/http/cache/redis"
 	"gobible/logmanager/cli/http/config"
+	"gobible/logmanager/cli/http/services/search"
+	"sync"
 )
 
+
+
+//取巧；解决不能在控制器中在设置静态路由---》造成循环引用；
+// 这里只会执行一次！而且不会导致后续的请求中的阻塞。
+func SearchdirRouter(router *httprouter.Router) {
+
+	once := sync.Once{}
+	for {
+		ZipResultDir := <-search.ZipDirSignal
+		//log.Print(ZipResultDir)
+		//目录仅仅执行一次
+		once.Do(func() {
+			//log.Println("once......")
+			//ZipResultDir := <-search.ZipDirSignal
+			router.ServeFiles("/log/*filepath", http.Dir(ZipResultDir))
+			logrus.Println("zip result set ok: ", config.ZipResultDir)
+		})
+	}
+}
 
 
 //总路由

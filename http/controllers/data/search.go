@@ -98,7 +98,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 
 	//startTime := req.PostFormValue("start")
 	////startTime := params.ByName("start")
-	//log.Println(startTime,endTime,condition,dir)
 
 	content,err := ioutil.ReadAll(req.Body)
 	if err !=nil{
@@ -132,11 +131,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		return
 	}
 
-	//如果没有down参数则是download目录
-	if len(down) == 0 {
-		genDownloadDirIfInputEmpty()
-	}
-
 	if len(dir) > 0 {
 		if !util.PathExist(dir){
 			rlt := data.NewJson(1,"查找路径不存在",nil)
@@ -152,6 +146,14 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 			return
 		}
 	}
+
+	//如果没有down参数则是download目录
+	if len(down) == 0 {
+		genDownloadDirIfInputEmpty()
+	}else{
+		search.ZipDirSignal <- down
+	}
+
 
 	//如果参数合法就判断是否是重复的请求
 	composeStr := fmt.Sprintf("%s-%s-%s-%s",startTime,endTime,condition,dir)

@@ -23,6 +23,8 @@ func main()  {
 
 	controllers.InitRouter(Router)
 
+	go controllers.SearchdirRouter(Router)
+
 	controllers.InitLog()
 
 	log.Println("service start on :8080,ok!")
