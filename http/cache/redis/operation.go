@@ -44,8 +44,6 @@ func InitPool()  {
 
 	configC := checkRedisConf()
 
-	log.Println(222,configC)
-
 	RedisClient = &redis.Pool{
 		MaxIdle:     10,
 		MaxActive:   0,
@@ -56,7 +54,7 @@ func InitPool()  {
 				log.Fatal(err)
 				return nil, err
 			}
-			
+
 			//自由填写了密码才去拨号
 			if len(configC.RedisPassWd) >0 {
 				if _, err := c.Do("AUTH", configC.RedisPassWd); err != nil {

@@ -13,6 +13,7 @@ import (
 	"gobible/logmanager/cli/http/utils"
 	"errors"
 	"github.com/sirupsen/logrus"
+	"gobible/logmanager/cli/util"
 )
 
 func Search(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
@@ -105,6 +106,7 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	condition := pickData.C
 	//自定义要查找的目录
 	dir := pickData.Dir
+	down := pickData.Down
 
 	//参数校验
 	if len(startTime) == 0 ||
@@ -114,6 +116,22 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		rlt := data.NewJson(1,"参数不合法",nil)
 		fmt.Fprint(res,string(rlt))
 		return
+	}
+
+	if len(dir) > 0 {
+		if !util.PathExist(dir){
+			rlt := data.NewJson(1,"查找路径不存在",nil)
+			res.Write([]byte(string(rlt)))
+			return
+		}
+	}
+
+	if len(down) > 0 {
+		if !util.PathExist(down){
+			rlt := data.NewJson(1,"下载目录不存在",nil)
+			res.Write([]byte(string(rlt)))
+			return
+		}
 	}
 
 	//如果参数合法就判断是否是重复的请求

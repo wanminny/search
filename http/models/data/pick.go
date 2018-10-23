@@ -6,6 +6,7 @@ type Pick struct {
 	End string `json:"end"`
 	C string `json:"c"`
 	Dir string `json:"dir"`
+	Down string `json:"down"`
 }
 
 
