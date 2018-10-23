@@ -19,6 +19,7 @@ type ConfigContent struct {
 	RedisPort string `json:"redis_port"`
 	RedisDb string `json:"redis_db"`
 	RedisPassWd string `json:"redis_pass_wd"`
+	Down string `json:"down"`
 }
 
 

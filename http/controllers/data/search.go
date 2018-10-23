@@ -14,6 +14,8 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"gobible/logmanager/cli/util"
+	"os"
+	"gobible/logmanager/cli/http/config"
 )
 
 func Search(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
@@ -79,6 +81,17 @@ func isProcessing(key string)  bool {
 	return false
 }
 
+func genDownloadDirIfInputEmpty()  {
+
+	//初始化服务器日志生成的目录；便于查看情况
+	if !util.PathExist(util.GetCurrentDirectory() + "/" + config.ZipResultDir){
+		err :=os.Mkdir(config.ZipResultDir,0755)
+		if err != nil{
+			logrus.Println(err)
+		}
+	}
+
+}
 
 //获取数据服务
 func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
@@ -117,6 +130,11 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		rlt := data.NewJson(1,"参数不合法",nil)
 		fmt.Fprint(res,string(rlt))
 		return
+	}
+
+	//如果没有down参数则是download目录
+	if len(down) == 0 {
+		genDownloadDirIfInputEmpty()
 	}
 
 	if len(dir) > 0 {

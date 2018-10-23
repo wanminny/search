@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"math/rand"
 	"github.com/sirupsen/logrus"
+	"gobible/logmanager/cli/http/config"
 )
 
 const TIMEFORMAT = "20060102"
@@ -130,6 +131,7 @@ func genarateFile(content []byte,deviceId string) {
 
 //压缩文件
 func gzipFile(deviceId,ZipResultDir string) {
+
 	<-gzipOK
 
 	//destGzipFileDir = "/tar/" + currentTimeFormat() + ".tar.gz"
@@ -137,7 +139,18 @@ func gzipFile(deviceId,ZipResultDir string) {
 
 	//util.GetCurrentDirectory() + "/" + "result" + "/"
 
-	destGzipFileDir = util.GetCurrentDirectory() + "/" + ZipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
+	if ZipResultDir == config.ZipResultDir{
+
+		destGzipFileDir = util.GetCurrentDirectory() + "/" + ZipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
+	} else{
+
+		length := len(ZipResultDir)
+		//防止最后一个/ab/c/d/ 最后带上了/
+		if ZipResultDir[length-1:] == "/"{
+			ZipResultDir = ZipResultDir[:length-1]
+		}
+		destGzipFileDir = ZipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
+	}
 
 	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
 

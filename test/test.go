@@ -130,7 +130,15 @@ func mkdirs1()  {
 
 func main()  {
 
+	ZipResultDir := "/ab/b/c/d"
+	length := len(ZipResultDir)
+	if ZipResultDir[length-1:] == "/"{
+		log.Println(1111)
+		ZipResultDir = ZipResultDir[:length-1]
+		log.Println(ZipResultDir)
+	}
 
+	os.Exit(0)
 	mkdirs1()
 
 	os.Exit(1)
