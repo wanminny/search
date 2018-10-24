@@ -14,7 +14,7 @@ func ZipDir(dir, zipFile string) {
 
 	fz, err := os.Create(zipFile)
 	if err != nil {
-		logrus.Fatalf("Create zip file failed: %s\n", err.Error())
+		logrus.Println("ZipDir :异常 ","Create zip file failed: %s\n", err.Error())
 	}
 	defer fz.Close()
 

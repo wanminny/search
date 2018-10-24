@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"github.com/sirupsen/logrus"
 	"gobible/logmanager/cli/http/config"
+	"log"
 )
 
 const TIMEFORMAT = "20060102"
@@ -88,8 +89,12 @@ func randSeed()  {
 	rand.Seed(time.Now().UnixNano())
 }
 
+func init()  {
+	log.SetFlags(log.Llongfile | log.Ltime)
+}
 
 func initDir()  {
+
 	copyDirTar = "copyDir" + genCopyDirTar()
 	copyFileTar = "copyFileDir" + genCopyFileTar()
 	tmpLogDir = "tmpLog" + genTmpLogDir()
@@ -112,18 +117,21 @@ func genTmpLogDir() string {
 
 func genarateFile(content []byte,deviceId string) {
 
-	keyWords := deviceId
-	destFileDir = tmpLogDir + "/" + "gen_" + keyWords + "_" + genFileTimeFormat() + ".log"
+	//防止异常
+	keyWords := strings.Trim(deviceId,"")
+
+	// linux上面如果不加全路径会导致出错？
+	destFileDir = util.GetCurrentDirectory() + "/" + tmpLogDir + "/" + "gen_" + keyWords + "_" + genFileTimeFormat() + ".log"
+	log.Println(tmpLogDir,destFileDir)
 	//destFileDir = "log/gen-"+currentTimeFormat()+".log"
 
 	f, err := os.OpenFile(destFileDir, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
-
 	defer f.Close()
 
 	if err != nil {
-		logrus.Fatal("生成目标文件异常:", err)
+		logrus.Println("生成目标文件异常:", err)
+		return
 	}
-
 	//添加换行
 	c := string(content) + "\n"
 	f.Write([]byte(c))
@@ -137,7 +145,6 @@ func gzipFile(deviceId,ZipResultDir string) {
 
 	//deviceId 是查找原因 之前是准备仅仅定义设备
 	if ZipResultDir == config.ZipResultDir{
-
 		destGzipFileDir = util.GetCurrentDirectory() + "/" + ZipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
 	} else{
 
@@ -151,16 +158,13 @@ func gzipFile(deviceId,ZipResultDir string) {
 
 	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
 
+	log.Println(wantZipDir)
+
 	//压缩文件
 	util.ZipDir(wantZipDir, destGzipFileDir)
 
 	//结束程序 信号
 	end <- 1
-}
-
-func init() {
-	//logrus.SetFlags(log.Llongfile | log.Ltime)
-	//logrus.SetFormatter()
 }
 
 func genFileTimeFormat() string  {
@@ -249,7 +253,7 @@ func findTextInFile(fileName,deviceId string) {
 
 	f, err := os.Open(fileName)
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Println("findTextInFile 打开文件异常:",err)
 	}
 	defer f.Close()
 
@@ -268,7 +272,7 @@ func findTextInFile(fileName,deviceId string) {
 				//<-end
 				//return
 			} else {
-				logrus.Fatal(line, prefix, err)
+				logrus.Println("ReadLine 异常:",line, prefix, err)
 			}
 		}
 		timeDeltaAndDeviceIdOK(line,deviceId)

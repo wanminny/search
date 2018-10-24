@@ -52,7 +52,7 @@ func InitPool()  {
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", configC.RedisHost + ":"+ configC.RedisPort)
 			if err != nil {
-				log.Fatal(err)
+				logrus.Println("Redis Dial 异常: ",err)
 				return nil, err
 			}
 
@@ -60,7 +60,7 @@ func InitPool()  {
 			if len(configC.RedisPassWd) >0 {
 				if _, err := c.Do("AUTH", configC.RedisPassWd); err != nil {
 					c.Close()
-					log.Fatal(err)
+					logrus.Println(" redis AUTH 异常 :",err)
 					return nil, err
 				}
 			}

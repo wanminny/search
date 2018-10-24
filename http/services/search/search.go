@@ -98,7 +98,7 @@ func DoSearch(dirs []string,directory,findCondition,deviceId,ZipResultDir string
 							//<-end
 							//return
 						} else {
-							logrus.Fatal(line, prefix, err)
+							logrus.Println("DoSearch 异常:",line, prefix, err)
 						}
 					}
 					timeDeltaAndDeviceIdOK(line,deviceId)

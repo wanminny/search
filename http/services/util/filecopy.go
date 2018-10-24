@@ -100,18 +100,18 @@ func SimpleCopyFile(destFile string,srcFile string){
 
 	from, err := os.Open(srcFile)
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Println(" SimpleCopyFile Open 异常:",err)
 	}
 	defer from.Close()
 
 	to, err := os.OpenFile(destFile, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Println("SimpleCopyFile Open 异常: ",err)
 	}
 	defer to.Close()
 
 	_, err = io.Copy(to, from)
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Println("SimpleCopyFile Open 异常: ",err)
 	}
 }
