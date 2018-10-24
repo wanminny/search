@@ -263,11 +263,6 @@ func findTextInFile(fileName,deviceId string) {
 			if err == io.EOF {
 				logrus.Println("处理文件 压缩文件 结束了,ok !")
 				break
-				////通知可以压缩文件了
-				//gzipOK <- struct{}{}
-				//go gzipFile()
-				//<-end
-				//return
 			} else {
 				logrus.Println("ReadLine 异常:",line, prefix, err)
 			}
