@@ -90,9 +90,9 @@ func randSeed()  {
 
 
 func initDir()  {
-	copyDirTar = genCopyDirTar()
-	copyFileTar = genCopyFileTar()
-	tmpLogDir = genTmpLogDir()
+	copyDirTar = "copyDir" + genCopyDirTar()
+	copyFileTar = "copyFileDir" + genCopyFileTar()
+	tmpLogDir = "tmpLog" + genTmpLogDir()
 	logrus.Println(copyFileTar,copyDirTar,tmpLogDir)
 }
 
@@ -135,11 +135,7 @@ func gzipFile(deviceId,ZipResultDir string) {
 
 	<-gzipOK
 
-	//destGzipFileDir = "/tar/" + currentTimeFormat() + ".tar.gz"
 	//deviceId 是查找原因 之前是准备仅仅定义设备
-
-	//util.GetCurrentDirectory() + "/" + "result" + "/"
-
 	if ZipResultDir == config.ZipResultDir{
 
 		destGzipFileDir = util.GetCurrentDirectory() + "/" + ZipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"

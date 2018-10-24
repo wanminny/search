@@ -36,15 +36,12 @@ func main()  {
 	//	AllowedMethods: []string{"GET", "POST", "DELETE", "PUT", "OPTIONS"},
 	//	//Debug:true,
 	//})
-	//
-	//c = cors.AllowAll()
-
 	//跨域设置
 	//handler := cors.Default().Handler(Router)
 
 	handler := cors.AllowAll().Handler(Router)
 	//log.Fatal(http.ListenAndServe(":8080",c.Handler(Router)))
 
-	log.Fatal(http.ListenAndServe(":80",handler))
+	log.Fatal(http.ListenAndServe(":8080",handler))
 
 }
