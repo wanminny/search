@@ -130,6 +130,17 @@ func mkdirs1()  {
 
 func main()  {
 
+
+	//destDirFile := "/gopath/src/gobible/logmanager/cli/test/ac.txt"
+
+	destDirFile := "/gopath/src/gobible/logmanager/cli/test/cc/ac.txt"
+
+	f,err := os.OpenFile(destDirFile, os.O_CREATE | os.O_WRONLY, 0644)
+	if err != nil{
+		log.Println(err)
+	}
+	os.Exit(0)
+
 	ZipResultDir := "/ab/b/c/d"
 	length := len(ZipResultDir)
 	if ZipResultDir[length-1:] == "/"{
@@ -167,7 +178,7 @@ func main()  {
 
 	realName := "/gopath/src/gobible/logmanager/cli/tcp_stdout.log-2018101512"
 
-	f, err := os.Open(realName)
+	f, err = os.Open(realName)
 	if err != nil {
 		log.Println(err)
 	}
