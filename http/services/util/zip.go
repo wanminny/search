@@ -22,6 +22,7 @@ func ZipDir(dir, zipFile string) {
 	//gzip.New
 	defer w.Close()
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		//log.Print(info.ModTime().Format("20060102150304"))
 		if !info.IsDir() {
 			fDest, err := w.Create(path[len(dir)+1:])
 			if err != nil {
