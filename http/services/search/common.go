@@ -118,11 +118,10 @@ func genTmpLogDir() string {
 func genarateFile(content []byte,deviceId string) {
 
 	//防止异常
-	keyWords := strings.Trim(deviceId,"")
+	keyWords := strings.Trim(deviceId," ")
 
 	// linux上面如果不加全路径会导致出错？
 	destFileDir = util.GetCurrentDirectory() + "/" + tmpLogDir + "/" + "gen_" + keyWords + "_" + genFileTimeFormat() + ".log"
-	log.Println(tmpLogDir,destFileDir)
 	//destFileDir = "log/gen-"+currentTimeFormat()+".log"
 
 	f, err := os.OpenFile(destFileDir, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
@@ -157,8 +156,6 @@ func gzipFile(deviceId,ZipResultDir string) {
 	}
 
 	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
-
-	log.Println(wantZipDir)
 
 	//压缩文件
 	util.ZipDir(wantZipDir, destGzipFileDir)

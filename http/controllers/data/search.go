@@ -160,7 +160,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		search.ZipDirSignal <- down
 	}
 
-
 	//如果参数合法就判断是否是重复的请求
 	composeStr := fmt.Sprintf("%s-%s-%s-%s",startTime,endTime,condition,dir)
 	findCondition := utils.MD5(composeStr)

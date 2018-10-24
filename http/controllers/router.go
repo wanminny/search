@@ -29,6 +29,7 @@ func SearchdirRouter(router *httprouter.Router) {
 		once.Do(func() {
 			//log.Println("once......")
 			//ZipResultDir := <-search.ZipDirSignal
+			// TODO 测试 如果 ZipResultDir是非本地目录是否可以？
 			router.ServeFiles("/log/*filepath", http.Dir(ZipResultDir))
 			logrus.Println("zip result set ok: ", config.ZipResultDir)
 		})
