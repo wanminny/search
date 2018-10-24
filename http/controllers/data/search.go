@@ -96,6 +96,12 @@ func genDownloadDirIfInputEmpty()  {
 //获取数据服务
 func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 
+	//data.SetCROS(res)
+	//res.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
+	res.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	//res.Header().Add("Access-Control-Allow-Credentials", "true") //header的类型
+	//res.Header().Set("content-type", "application/json")             //返回数据格式是json
+
 	//startTime := req.PostFormValue("start")
 	////startTime := params.ByName("start")
 
@@ -171,8 +177,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	if err != nil{
 		return
 	}
-
-	//static.SearchdirRouter(down)
 
 	go search.DoSearch(dirs,dir,findCondition,condition,down)
 

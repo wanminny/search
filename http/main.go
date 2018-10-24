@@ -5,6 +5,7 @@ import (
 	"log"
 	"gobible/logmanager/cli/http/controllers"
 	"github.com/julienschmidt/httprouter"
+	"github.com/rs/cors"
 )
 
 var (
@@ -23,12 +24,27 @@ func main()  {
 
 	controllers.InitRouter(Router)
 
-	go controllers.SearchdirRouter(Router)
-
 	controllers.InitLog()
 
 	log.Println("service start on :8080,ok!")
 
-	log.Fatal(http.ListenAndServe(":8080",Router))
+	go controllers.SearchdirRouter(Router)
+
+	//c := cors.New(cors.Options{
+	//	AllowedOrigins: []string{"*"},
+	//	AllowCredentials: true,
+	//	AllowedMethods: []string{"GET", "POST", "DELETE", "PUT", "OPTIONS"},
+	//	//Debug:true,
+	//})
+	//
+	//c = cors.AllowAll()
+
+	//跨域设置
+	//handler := cors.Default().Handler(Router)
+
+	handler := cors.AllowAll().Handler(Router)
+	//log.Fatal(http.ListenAndServe(":8080",c.Handler(Router)))
+
+	log.Fatal(http.ListenAndServe(":80",handler))
 
 }

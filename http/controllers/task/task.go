@@ -11,6 +11,12 @@ import (
 // 列出正在处理的任务
 func List(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 
+	//data.SetCROS(res)
+	//res.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
+	res.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	//res.Header().Add("Access-Control-Allow-Credentials", "true") //header的类型
+	//res.Header().Set("content-type", "application/json")             //返回数据格式是json
+
 	m := redis.AllKeys()
 	rlt := data.NewJson(0,"所有任务列表",m)
 	fmt.Fprint(res,string(rlt))
@@ -21,6 +27,12 @@ func List(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 
 //检查某个任务是否处理完成。
 func CheckIsRunning(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
+
+	//data.SetCROS(res)
+	//res.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
+	res.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	//res.Header().Add("Access-Control-Allow-Credentials", "true") //header的类型
+	//res.Header().Set("content-type", "application/json")             //返回数据格式是json
 
 	no := params.ByName("no")
 
