@@ -97,11 +97,7 @@ func genDownloadDirIfInputEmpty()  {
 func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 
 	//data.SetCROS(res)
-	//res.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
 	res.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
-	//res.Header().Add("Access-Control-Allow-Credentials", "true") //header的类型
-	//res.Header().Set("content-type", "application/json")             //返回数据格式是json
-
 	//startTime := req.PostFormValue("start")
 	////startTime := params.ByName("start")
 
@@ -126,12 +122,27 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	dir := pickData.Dir
 	down := pickData.Down
 
+	configFile := redis.CheckRedisConf()
+	configDown := configFile.Down
+
+	if len(configDown) == 0 {
+		rlt := data.NewJson(1,"获取config.json配置失败",nil)
+		fmt.Fprint(res,string(rlt))
+		return
+	}
+
+	down = configDown
+	if len(down) == 0 {
+		rlt := data.NewJson(1,"config.json down 配置为空",nil)
+		fmt.Fprint(res,string(rlt))
+		return
+	}
+
 	//参数校验
 	if len(startTime) == 0 ||
 		len(endTime) == 0 ||
 		len(condition) == 0 ||
-		len(dir) == 0 ||
-		len(down) == 0 {
+		len(dir) == 0 {
 		rlt := data.NewJson(1,"参数不合法",nil)
 		fmt.Fprint(res,string(rlt))
 		return
@@ -157,7 +168,7 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	if len(down) == 0 {
 		genDownloadDirIfInputEmpty()
 	}else{
-		search.ZipDirSignal <- down
+		//search.ZipDirSignal <- down
 	}
 
 	//如果参数合法就判断是否是重复的请求

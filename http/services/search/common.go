@@ -95,9 +95,9 @@ func init()  {
 
 func initDir()  {
 
-	copyDirTar = "copyDir" + genCopyDirTar()
-	copyFileTar = "copyFileDir" + genCopyFileTar()
-	tmpLogDir = "tmpLog" + genTmpLogDir()
+	copyDirTar =  config.TmpTransferDir + "/"+"copyDir" + genCopyDirTar()
+	copyFileTar = config.TmpTransferDir + "/"+ "copyFileDir" + genCopyFileTar()
+	tmpLogDir = config.TmpTransferDir + "/"+ "tmpLog" + genTmpLogDir()
 	logrus.Println(copyFileTar,copyDirTar,tmpLogDir)
 }
 

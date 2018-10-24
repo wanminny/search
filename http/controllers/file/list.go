@@ -10,11 +10,7 @@ import (
 //文件目录服务
 func Content(res http.ResponseWriter,req *http.Request,params httprouter.Params)()  {
 
-	//res.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
 	res.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
-	//res.Header().Add("Access-Control-Allow-Credentials", "true") //header的类型
-	//res.Header().Set("content-type", "application/json")             //返回数据格式是json
-
 	//data.SetCROS(res)
 	rlt := data.NewJson(0,"show result! access path /log",nil)
 	fmt.Fprint(res,string(rlt))

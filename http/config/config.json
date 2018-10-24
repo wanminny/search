@@ -17,5 +17,5 @@
   "redis_pass_wd":"",
   "redis_db":"6",
   "服务计算的文件后导出的下载目录":"download",
-  "down":"download"
+  "down":"/gopath/ziptest"
 }

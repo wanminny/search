@@ -23,7 +23,7 @@ type ConfigContent struct {
 }
 
 
-func checkRedisConf() (config * ConfigContent) {
+func CheckRedisConf() (config * ConfigContent) {
 
 	configC := &ConfigContent{}
 	byteC,err := ioutil.ReadFile("./config/config.json")
@@ -43,7 +43,7 @@ func checkRedisConf() (config * ConfigContent) {
 
 func InitPool()  {
 
-	configC := checkRedisConf()
+	configC := CheckRedisConf()
 
 	RedisClient = &redis.Pool{
 		MaxIdle:     10,

@@ -44,10 +44,12 @@ func InitRouter(router *httprouter.Router)  {
 	//文件目录
 	router.GET("/",file.Content)
 
+	configFile := redis.CheckRedisConf()
+
 	//http://localhost:8080/log/ 可以成功！
 	// 注释： *filepath是固定的！否则报错
 	//文件目录列表服务
-	//Router.ServeFiles("/log/*filepath",http.Dir(search.ZipResultDir))
+	router.ServeFiles("/log/*filepath",http.Dir(configFile.Down))
 
 	//服务器列表目录 [服务器诊断日志]
 	router.ServeFiles("/server_log/*filepath",http.Dir(config.ServerLogDir))
@@ -72,6 +74,13 @@ func initDir()  {
 	//		logrus.Println(err)
 	//	}
 	//}
+
+	if !util.PathExist(util.GetCurrentDirectory() + "/" + config.TmpTransferDir){
+		err :=os.Mkdir(config.TmpTransferDir,0755)
+		if err != nil{
+			logrus.Println(err)
+		}
+	}
 
 	//初始化服务器日志生成的目录；便于查看情况
 	if !util.PathExist(util.GetCurrentDirectory() + "/" + config.ServerLogDir){
