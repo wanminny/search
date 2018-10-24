@@ -1,0 +1,1 @@
+{"GET /api/device/gpsInfo":33144,"GET /api/device/gpsInfo/wgs84":1625,"GET /api/device/workInfo":1677}
