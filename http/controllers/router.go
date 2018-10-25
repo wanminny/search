@@ -44,6 +44,8 @@ func InitRouter(router *httprouter.Router)  {
 	//文件目录
 	router.GET("/",file.Content)
 
+	router.GET("/search",data.Search)
+
 	configFile := redis.CheckRedisConf()
 
 	//http://localhost:8080/log/ 可以成功！
@@ -63,6 +65,8 @@ func InitRouter(router *httprouter.Router)  {
 	//查询某个任务是否还在运行
 	router.GET("/list/:no",task.CheckIsRunning)
 
+	//内存 诊断
+	router.GET("/memory",file.Memory)
 }
 
 func initDir()  {

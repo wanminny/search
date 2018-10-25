@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 	"fmt"
+	"log"
 	"io/ioutil"
 	"gobible/logmanager/cli/http/models/data"
 	"encoding/json"
@@ -16,13 +17,19 @@ import (
 	"gobible/logmanager/cli/util"
 	"os"
 	"gobible/logmanager/cli/http/config"
+	"gobible/logmanager/cli/http/controllers/file"
 )
 
 func Search(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
-	rlt := data.NewJson(0,"search service",nil)
-	fmt.Fprint(res,string(rlt))
+
+	bytes,err := json.Marshal(file.Test)
+	if err != nil{
+		log.Println(err)
+	}
+	fmt.Fprint(res,string(bytes))
 	return
 }
+
 
 func errResultJson(res http.ResponseWriter,msg string,err error)  {
 
