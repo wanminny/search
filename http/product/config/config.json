@@ -1,0 +1,21 @@
+{
+
+  "正式的主机":"10.0.3.11",
+  "正式的端口":"6379",
+  "正式的密码":"export-redis-01:3Ndy4tcWv3",
+  "正式的DB":"6",
+
+  "redis_host_test":"10.0.3.11",
+  "redis_port_test":"6379",
+  "redis_pass_wd_test":"export-redis-01:3Ndy4tcWv3",
+  "redis_db_test":"6",
+  "服务计算的文件后导出的下载目录_Test":"download",
+  "down_test":"download",
+
+  "redis_host":"127.0.0.1",
+  "redis_port":"6379",
+  "redis_pass_wd":"",
+  "redis_db":"6",
+  "服务计算的文件后导出的下载目录":"download",
+  "down":"/gopath/ziptest"
+}

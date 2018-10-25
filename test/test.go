@@ -123,12 +123,29 @@ func mkdirs1()  {
 	if err != nil{
 		log.Println(err)
 	}
+}
 
+func demo()  {
+
+	var (
+		a =1
+	)
+	defer func() {
+		log.Println(11111)
+	}()
+
+	if a == 1{
+		log.Println(55555)
+		return
+	}
 
 }
 
-
 func main()  {
+	demo()
+}
+
+func main1()  {
 
 
 	//destDirFile := "/gopath/src/gobible/logmanager/cli/test/ac.txt"

@@ -5,8 +5,8 @@ import (
 	"bufio"
 	"io"
 	"gobible/logmanager/cli/http/services/util"
-	"gobible/logmanager/cli/http/cache/redis"
 	"github.com/sirupsen/logrus"
+	"gobible/logmanager/cli/http/cache/redis"
 )
 
 func init()  {
@@ -14,6 +14,10 @@ func init()  {
 }
 
 func DoSearch(dirs []string,directory,findCondition,deviceId,ZipResultDir string)  {
+
+	defer delDirs()
+	//处理完成后清空key
+	defer redis.DelKey(findCondition)
 
 	randSeed()
 	initDir()
@@ -144,10 +148,6 @@ func DoSearch(dirs []string,directory,findCondition,deviceId,ZipResultDir string
 	gzipOK <- struct{}{}
 	go gzipFile(deviceId,ZipResultDir)
 	<-end
-
-	delDirs()
-	//处理完成后清空key
-	redis.DelKey(findCondition)
 
 }
 
