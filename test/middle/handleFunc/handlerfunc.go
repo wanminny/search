@@ -36,5 +36,21 @@ func AddMiddleWareWithHanlderFunc(next http.HandlerFunc) http.HandlerFunc  {
 
 // 简单的添加 普通方法;
 func CommonFunc(w http.ResponseWriter,req * http.Request)  {
+	log.Println("common func with handler ")
+	//time.Sleep(time.Second)
 	io.WriteString(w,"common func with handler func !")
+}
+
+func Log(w http.ResponseWriter,req *http.Request)  {
+	log.Println("log here.....")
+	io.WriteString(w,"log func")
+}
+
+// 防止普通方式一个调用嵌套一个调用 链太长
+func Use(httpFunc http.HandlerFunc,middle ...func(httpFunc http.HandlerFunc) http.HandlerFunc) http.HandlerFunc  {
+
+	for _,v := range middle {
+		httpFunc = v(httpFunc)
+	}
+	return httpFunc
 }

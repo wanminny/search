@@ -29,5 +29,22 @@ func main()  {
 	//添加中间件2
 	http.HandleFunc("/testhandlefunc",handleFunc.AddMiddleWareWithHanlderFunc(handleFunc.CommonFunc))
 
+
+	//使用便捷的方式调用 处理
+	http.Handle("/usehandle",handler.Use(
+		http.HandlerFunc(handleFunc.CommonFunc),
+		handler.LogFunc,handler.AddMiddleWithHandle))
+
+
+	// 使用这样一种就可以了 使用栈的方式执行顺序！
+	http.Handle("/usehandle2",handler.Use(
+		http.HandlerFunc(handleFunc.CommonFunc),
+		handler.AddMiddleWithHandle,handler.LogFunc))
+
+
+	http.Handle("/usehandle1",handler.Use(
+		handler.User{},
+		handler.LogFunc,handler.AddMiddleWithHandle))
+
 	http.ListenAndServe(":8081",nil)
 }
