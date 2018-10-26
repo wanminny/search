@@ -10,7 +10,6 @@ import (
 	"log"
 	"io"
 	"os"
-	"sync/atomic"
 	"sync"
 )
 var (
