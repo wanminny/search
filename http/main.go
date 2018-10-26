@@ -7,10 +7,12 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
 	"gobible/logmanager/cli/http/utils"
+	"flag"
 )
 
 var (
 	Router  *httprouter.Router
+	Port string
 )
 
 func GetGlobalRouter() *httprouter.Router  {
@@ -18,8 +20,15 @@ func GetGlobalRouter() *httprouter.Router  {
 	return Router
 }
 
+//自定义端口 
+func initEnv()  {
+	flag.StringVar(&Port,"port",":8080","server port .")
+	flag.Parse()
+}
 
 func main()  {
+
+	initEnv()
 
 	GetGlobalRouter()
 
@@ -28,7 +37,7 @@ func main()  {
 	controllers.InitLog()
 
 	log.Println("service start on :8080,ok!")
-	
+
 	handler := cors.AllowAll().Handler(Router)
 
 	go utils.DeleteOverSomeTime()
