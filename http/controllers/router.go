@@ -57,6 +57,9 @@ func InitRouter(router *httprouter.Router)  {
 	router.ServeFiles("/server_log/*filepath",http.Dir(config.ServerLogDir))
 
 	//下发任务
+	//router.POST("/data/pick",data.Pick)
+
+	//下发任务
 	router.POST("/data/pick",data.Pick)
 
 	//列出正在处理中的任务

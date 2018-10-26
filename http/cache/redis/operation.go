@@ -27,6 +27,7 @@ func CheckRedisConf() (config * ConfigContent) {
 
 	configC := &ConfigContent{}
 	byteC,err := ioutil.ReadFile("./config/config.json")
+	//byteC,err := ioutil.ReadFile("../../config/config.json")
 
 	if err != nil{
 		log.Fatal(err)
@@ -133,3 +134,74 @@ func AllKeys() (kvs map[string]string) {
 	}
 	return
 }
+
+//入队列 左边进；
+func LPush(key,value string,) (err error) {
+	conn := RedisClient.Get()
+	_, err = conn.Do("LPUSH", key,value)
+	if err != nil{
+		logrus.Println(err)
+	}
+	return
+}
+
+//右边出
+func Rop(key,value string)  (err error)  {
+	conn := RedisClient.Get()
+	_, err = conn.Do("RPOP", key)
+	if err != nil{
+		logrus.Println(err)
+	}
+	return
+}
+//获取队列
+func LRange(key string,start,end int) (err error)  {
+	conn := RedisClient.Get()
+	_, err = conn.Do("lrange", key,start,end)
+	if err != nil{
+		logrus.Println(err)
+	}
+	return
+}
+
+// 设置值;
+func HSet(key,field string,value interface{}) (err error) {
+	conn := RedisClient.Get()
+	_, err = conn.Do("hset", key,field,value)
+	if err != nil{
+		logrus.Println(err)
+	}
+	return
+}
+
+//查询状态;
+func HGet(key,field string)  (err error) {
+	conn := RedisClient.Get()
+	_, err = conn.Do("hget", key,field)
+	if err != nil{
+		logrus.Println(err)
+	}
+	return
+
+}
+
+func HMSet(key string,m map[string]interface{}) (err error)  {
+
+	conn := RedisClient.Get()
+	//m := map[string]string{
+	//	"title":  "Example2",
+	//	"author": "Steve",
+	//	"body":   "Map",
+	//}
+	if _, err := conn.Do("HMSET", redis.Args{}.Add(key).AddFlat(m)...); err != nil {
+		panic(err)
+	}
+	return
+}
+
+//func Trans()  {
+//	conn := RedisClient.Get()
+//	conn.Send("MULTI")
+//	conn.Send()
+//	conn.Do("EXEC")
+//}

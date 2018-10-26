@@ -23,7 +23,9 @@ func Content(res http.ResponseWriter,req *http.Request,params httprouter.Params)
 	Test["aaa"] = "test"
 	//res.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
 	data.SetCROS(res)
-	rlt := data.NewJson(0,"show result! access path /log",nil)
+	//nil 与 struct{}{}的区别
+	rlt := data.NewJson(0,"show result! access path /log", struct {
+	}{})
 	fmt.Fprint(res,string(rlt))
 	return
 }

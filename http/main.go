@@ -20,7 +20,7 @@ func GetGlobalRouter() *httprouter.Router  {
 	return Router
 }
 
-//自定义端口 
+//自定义端口
 func initEnv()  {
 	flag.StringVar(&Port,"port",":8080","server port .")
 	flag.Parse()
