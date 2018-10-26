@@ -28,9 +28,7 @@ func main()  {
 	controllers.InitLog()
 
 	log.Println("service start on :8080,ok!")
-
-	//go controllers.SearchdirRouter(Router)
-
+	
 	handler := cors.AllowAll().Handler(Router)
 
 	go utils.DeleteOverSomeTime()
