@@ -64,6 +64,9 @@ var (
 	//当前的文件的拷贝目录
 	copyFileTar = "copy-file-tar"
 
+	//download 目录
+	DownloadDir = ""
+
 	//随机数字目录
 	randInt64 int64 = 9876543210
 

@@ -8,6 +8,9 @@ import (
 	"github.com/rs/cors"
 	"gobible/logmanager/cli/http/utils"
 	"flag"
+	"gobible/logmanager/cli/http/cache/redis"
+	"gobible/logmanager/cli/util"
+	"gobible/logmanager/cli/http/services/search"
 )
 
 var (
@@ -26,6 +29,22 @@ func initEnv()  {
 	flag.Parse()
 }
 
+func initConfigJson()  {
+	configFile := redis.CheckRedisConf()
+	configDown := configFile.Down
+	if len(configDown) == 0 {
+		log.Fatal("获取config.json配置失败")
+	}
+	down := configDown
+	if len(down) > 0 {
+		if !util.PathExist(down){
+			log.Fatal("config.json down 中的下载目录不存在")
+		}
+	}
+
+	search.DownloadDir = down
+}
+
 func main()  {
 
 	initEnv()
@@ -33,6 +52,8 @@ func main()  {
 	GetGlobalRouter()
 
 	controllers.InitRouter(Router)
+
+	initConfigJson()
 
 	controllers.InitLog()
 

@@ -6,7 +6,6 @@ import (
 	"io"
 	"gobible/logmanager/cli/http/services/util"
 	"github.com/sirupsen/logrus"
-	"gobible/logmanager/cli/http/cache/redis"
 )
 
 func init()  {
@@ -17,7 +16,7 @@ func DoSearch(dirs []string,directory,findCondition,deviceId,ZipResultDir string
 
 	defer delDirs()
 	//处理完成后清空key
-	defer redis.DelKey(findCondition)
+	//defer redis.DelKey(findCondition)
 
 	randSeed()
 	initDir()

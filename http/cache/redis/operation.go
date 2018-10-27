@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"github.com/sirupsen/logrus"
+	"fmt"
 )
 
 
@@ -22,12 +23,18 @@ type ConfigContent struct {
 	Down string `json:"down"`
 }
 
+//tag 注意是redis 非json... 否则会获取不到需要的数据;
+type Job struct {
+	Condition   string `redis:"condition"`
+	Status     int64 `redis:"status"`
+}
+
 
 func CheckRedisConf() (config * ConfigContent) {
 
 	configC := &ConfigContent{}
-	byteC,err := ioutil.ReadFile("./config/config.json")
-	//byteC,err := ioutil.ReadFile("../../config/config.json")
+	//byteC,err := ioutil.ReadFile("./config/config.json")
+	byteC,err := ioutil.ReadFile("../../config/config.json")
 
 	if err != nil{
 		log.Fatal(err)
@@ -145,15 +152,17 @@ func LPush(key,value string,) (err error) {
 	return
 }
 
-//右边出
-func Rop(key,value string)  (err error)  {
+func LLen(key string) (v int,err error) {
 	conn := RedisClient.Get()
-	_, err = conn.Do("RPOP", key)
-	if err != nil{
-		logrus.Println(err)
-	}
-	return
+	return redis.Int(conn.Do("LLEN", key))
 }
+
+//右边出
+func RRop(key string)  (v string,err error)  {
+	conn := RedisClient.Get()
+	return redis.String(conn.Do("RPOP", key))
+}
+
 //获取队列
 func LRange(key string,start,end int) (err error)  {
 	conn := RedisClient.Get()
@@ -175,14 +184,47 @@ func HSet(key,field string,value interface{}) (err error) {
 }
 
 //查询状态;
-func HGet(key,field string)  (err error) {
+func HGet(key,field string)  (value string,err error) {
 	conn := RedisClient.Get()
-	_, err = conn.Do("hget", key,field)
-	if err != nil{
-		logrus.Println(err)
-	}
-	return
+	return redis.String(conn.Do("hget", key,field))
+	//if err != nil{
+	//	logrus.Println(err)
+	//}
+	//return
 
+}
+
+func HGetAll(key string) (v Job,err error){
+	conn := RedisClient.Get()
+	values, err := redis.Values(conn.Do("HGETALL", key))
+	//for _, v := range values {
+	//	log.Printf("%s", v)
+	//}
+	//for i := 0; i < len(values); i += 2 {
+	//	key, _ := redis.String(values[i], nil)
+	//	value, _ := redis.String(values[i+1], nil)
+	//
+	//	fmt.Printf("  %s: %s\n", key, value)
+	//}
+	//return
+	//return Job{Condition:}
+	///
+	if err != nil {
+		fmt.Println("HGETALL", err)
+	}
+	///千万注意了这里tag是 redis 不是 json
+	//type RQJob struct {
+	//	Condition   string `redis:"condition"`
+	//	Status     int64 `redis:"status"`
+	//}
+
+	var rqjob = Job{}
+	if err := redis.ScanStruct(values, &rqjob); err != nil {
+		fmt.Println(err)
+	}
+	v = rqjob
+	//fmt.Println("rqjob result", rqjob)
+	return
 }
 
 func HMSet(key string,m map[string]interface{}) (err error)  {

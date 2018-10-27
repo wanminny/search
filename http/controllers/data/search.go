@@ -18,6 +18,7 @@ import (
 	"os"
 	"gobible/logmanager/cli/http/config"
 	"gobible/logmanager/cli/http/controllers/file"
+	"strings"
 )
 
 func Search(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
@@ -229,19 +230,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	dir := pickData.Dir
 	//down := pickData.Down
 
-	configFile := redis.CheckRedisConf()
-	configDown := configFile.Down
-	if len(configDown) == 0 {
-		rlt := data.NewJson(1,"获取config.json配置失败",nil)
-		fmt.Fprint(res,string(rlt))
-		return
-	}
-	down := configDown
-	if len(down) == 0 {
-		rlt := data.NewJson(1,"config.json down 配置为空",nil)
-		fmt.Fprint(res,string(rlt))
-		return
-	}
 	//参数校验
 	if len(startTime) == 0 ||
 		len(endTime) == 0 ||
@@ -258,13 +246,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 			return
 		}
 	}
-	if len(down) > 0 {
-		if !util.PathExist(down){
-			rlt := data.NewJson(1,"下载目录不存在",nil)
-			res.Write([]byte(string(rlt)))
-			return
-		}
-	}
 
 	//如果参数合法就判断是否是重复的请求
 	composeStr := fmt.Sprintf("%s-%s-%s-%s",startTime,endTime,condition,dir)
@@ -276,6 +257,13 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	//	return
 	//}
 
+	//格式化的日志列表slice
+	dirs := make([]string,0)
+	//参数校验
+	err = getGlobalDirsName(res,&dirs,startTime,endTime)
+	if err != nil{
+		return
+	}
 
 	// 如果任务存在着不需要再下发了;并显示状态 ？ 或者干脆不管！
 
@@ -291,26 +279,82 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		"condition":composeStr,
 	}
 	redis.HMSet(findCondition,task)
-	msg := fmt.Sprintf("%f,%f",findCondition,"任务下发成功;请去查询接口获取结果文件地址")
+	msg := fmt.Sprintf("%s,%s",findCondition,"任务下发成功;请去查询接口获取结果文件地址")
 	rlt := data.NewJson(1,msg, struct {}{})
 	res.Write([]byte(string(rlt)))
 	return
+}
 
 
-	//
-	////格式化的日志列表slice
-	//dirs := make([]string,0)
-	////参数校验
-	//err = getGlobalDirsName(res,&dirs,startTime,endTime)
-	//if err != nil{
-	//	return
-	//}
-	//
-	//go search.DoSearch(dirs,dir,findCondition,condition,down)
-	//
-	////提交任务后马上设置值
-	//redis.SetValue(findCondition,composeStr)
-	//rlt := data.NewJson(0,"文件处理中",nil)
-	//res.Write([]byte(rlt))
+
+func DoWork()  {
+
+	for {
+
+		listLen,err := redis.LLen(config.RedisTaskName)
+		if err != nil{
+			log.Println(err)
+			continue
+		}
+		if listLen > 0 {
+
+			v,err := redis.RRop(config.RedisTaskName)
+			if err != nil{
+				log.Println(err)
+				continue
+			}
+			//根据v查找 hash中的条件和状态
+			job,err := redis.HGetAll(v)
+			if err != nil{
+				log.Println(err)
+				continue
+			}
+
+			//status := job.Status
+			condtion := job.Condition
+
+			fields := strings.Split(condtion,config.ConditionSplitChar)
+			//格式化的日志列表slice
+			dirs := make([]string,0)
+			startTime := fields[0]
+			endTime := fields[1]
+
+			ts, err := time.Parse(search.TIMEFORMAT, startTime)
+			if err != nil {
+				log.Println(err)
+			}
+			te, err := time.Parse(search.TIMEFORMAT, endTime)
+			if err != nil {
+				log.Println(err)
+			}
+			if ts.Equal(te) { // 日期相等
+				dirs = append(dirs, startTime)
+			} else {
+				// 日期大于前者
+				dirs = append(dirs, startTime)
+				ts = ts.Add(time.Hour * 24)
+				for te.After(ts) || te.Equal(ts){
+					dirs = append(dirs, ts.Format(search.TIMEFORMAT))
+					ts = ts.Add(time.Hour * 24)
+				}
+			}
+			logrus.Println(dirs)
+
+			//findCondition := ""
+			condition := fields[2]
+			dir :=  fields[3]
+			down := search.DownloadDir
+			//获取到所有的值
+			search.DoSearch(dirs,dir,"",condition,down)
+
+			//成功后设置标志位
+
+			//提交任务后马上设置值
+			//redis.SetValue(findCondition,composeStr)
+			//rlt := data.NewJson(0,"文件处理中",nil)
+			//res.Write([]byte(rlt))
+		}
+
+	}
 
 }

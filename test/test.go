@@ -141,12 +141,22 @@ func demo()  {
 
 }
 
+func testSplit()  {
+	a := (strings.Split("20181018-20181021-abc daf-/a/bc/d/asdf","-"))
+	log.Println(a[2])
+	os.Exit(1)
+}
+
 func main()  {
-	demo()
+	//demo()
+	testSplit()
 }
 
 func main1()  {
 
+
+	log.Println(strings.Split("20181018-20181021-abc daf-/a/bc/d/asdf","-"))
+	os.Exit(1)
 
 	//destDirFile := "/gopath/src/gobible/logmanager/cli/test/ac.txt"
 
