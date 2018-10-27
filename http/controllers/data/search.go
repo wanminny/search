@@ -315,6 +315,7 @@ func DoWork()  {
 			startTime := fields[0]
 			endTime := fields[1]
 
+			// 获取需要遍历的目录 控制器部分已经做了合法判断
 			ts, err := time.Parse(search.TIMEFORMAT, startTime)
 			if err != nil {
 				log.Println(err)
@@ -342,7 +343,8 @@ func DoWork()  {
 
 			log.Println(dirs,dir,down,condition)
 
-			search.DoSearch(dirs,dir,"",condition,down)
+			hashKey := v
+			search.DoSearch(dirs,dir,hashKey,condition,down)
 
 			//成功后设置标志位
 

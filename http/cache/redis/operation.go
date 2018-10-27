@@ -21,6 +21,7 @@ type ConfigContent struct {
 	RedisDb string `json:"redis_db"`
 	RedisPassWd string `json:"redis_pass_wd"`
 	Down string `json:"down"`
+	DownDomain string `json:"down_domain"`
 }
 
 //tag 注意是redis 非json... 否则会获取不到需要的数据;

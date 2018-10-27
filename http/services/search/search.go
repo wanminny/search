@@ -12,7 +12,7 @@ func init()  {
 	//log.SetFlags(log.Llongfile | log.Ltime)
 }
 
-func DoSearch(dirs []string,directory,findCondition,deviceId,ZipResultDir string)  {
+func DoSearch(dirs []string,directory,hashKey,deviceId,ZipResultDir string)  {
 
 	defer delDirs()
 	//处理完成后清空key
@@ -145,7 +145,7 @@ func DoSearch(dirs []string,directory,findCondition,deviceId,ZipResultDir string
 	}
 
 	gzipOK <- struct{}{}
-	go gzipFile(deviceId,ZipResultDir)
+	go gzipFile(deviceId,ZipResultDir,hashKey)
 	<-end
 
 }

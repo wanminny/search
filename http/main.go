@@ -33,6 +33,7 @@ func initEnv()  {
 func initConfigJson()  {
 	configFile := redis.CheckRedisConf()
 	configDown := configFile.Down
+	downDomain := configFile.DownDomain
 	if len(configDown) == 0 {
 		log.Fatal("获取config.json配置失败")
 	}
@@ -43,7 +44,12 @@ func initConfigJson()  {
 		}
 	}
 
+	if len(downDomain) == 0 {
+		log.Fatal("获取config.json 下载Domain 配置失败")
+	}
+
 	search.DownloadDir = down
+	search.DownLoadDomain = downDomain
 }
 
 func main()  {

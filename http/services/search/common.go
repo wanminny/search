@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gobible/logmanager/cli/http/config"
 	"log"
+	"gobible/logmanager/cli/http/cache/redis"
 )
 
 const TIMEFORMAT = "20060102"
@@ -66,6 +67,9 @@ var (
 
 	//download 目录
 	DownloadDir = ""
+
+	//下载域名
+	DownLoadDomain = ""
 
 	//随机数字目录
 	randInt64 int64 = 9876543210
@@ -141,13 +145,15 @@ func genarateFile(content []byte,deviceId string) {
 }
 
 //压缩文件
-func gzipFile(deviceId,ZipResultDir string) {
+func gzipFile(deviceId,ZipResultDir,hashKey string) {
 
 	<-gzipOK
 
 	//deviceId 是查找原因 之前是准备仅仅定义设备
+	fileName := deviceId + "_" + currentTimeFormatZip()+".zip"
+
 	if ZipResultDir == config.ZipResultDir{
-		destGzipFileDir = util.GetCurrentDirectory() + "/" + ZipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
+		destGzipFileDir = util.GetCurrentDirectory() + "/" + ZipResultDir + "/" + fileName
 	} else{
 
 		length := len(ZipResultDir)
@@ -155,13 +161,21 @@ func gzipFile(deviceId,ZipResultDir string) {
 		if ZipResultDir[length-1:] == "/"{
 			ZipResultDir = ZipResultDir[:length-1]
 		}
-		destGzipFileDir = ZipResultDir + "/" + deviceId + "_" + currentTimeFormatZip()+".zip"
+		destGzipFileDir = ZipResultDir + "/" + fileName
 	}
 
 	wantZipDir := util.GetCurrentDirectory() + "/" + tmpLogDir
 
 	//压缩文件
 	util.ZipDir(wantZipDir, destGzipFileDir)
+
+
+	//成功以后需要处理 状态和下载地址
+	hashValue := map[string]interface{}{
+		"download": DownLoadDomain + "/" + fileName ,
+		"status": config.RedisStatus(config.RedisStatusOK),
+	}
+	redis.HMSet(hashKey,hashValue)
 
 	//结束程序 信号
 	end <- 1

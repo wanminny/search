@@ -17,5 +17,7 @@
   "redis_pass_wd":"",
   "redis_db":"6",
   "服务计算的文件后导出的下载目录":"download",
-  "down":"/gopath/ziptest"
+  "down":"/gopath/ziptest",
+  "下载地址的域名前缀":"",
+  "downDomain":"127.0.0.1:8080/log"
 }
