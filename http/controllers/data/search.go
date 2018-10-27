@@ -364,6 +364,15 @@ func DoWork()  {
 			log.Println(dirs,dir,down,condition)
 
 			hashKey := v
+
+			//开始处理
+			task := map[string] interface{} {
+				"status":config.RedisStautsRunning,
+				//"condition":composeStr,
+				//"download":"",
+			}
+			redis.HMSet(hashKey,task)
+
 			search.DoSearch(dirs,dir,hashKey,condition,down)
 
 			//成功后设置标志位
