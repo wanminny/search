@@ -173,7 +173,7 @@ func gzipFile(deviceId,ZipResultDir,hashKey string) {
 	//成功以后需要处理 状态和下载地址
 	hashValue := map[string]interface{}{
 		"download": DownLoadDomain + "/" + fileName ,
-		"status": config.RedisStatus(config.RedisStatusOK),
+		"status": config.RedisStatusOK,
 	}
 	redis.HMSet(hashKey,hashValue)
 

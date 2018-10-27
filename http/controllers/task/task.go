@@ -7,7 +7,6 @@ import (
 	"gobible/logmanager/cli/http/models/data"
 	"fmt"
 	"gobible/logmanager/cli/http/config"
-	"strconv"
 )
 
 // 列出正在处理的任务
@@ -60,16 +59,17 @@ func CheckIsRunning(res http.ResponseWriter,req *http.Request,params httprouter.
 		return
 	}
 
-	v,err := redis.HGet(no,"status")
+	v,err :=redis.HGetAll(no)
+	//v,err = redis.HGet(no,"status")
 	//v,err := redis.GetValue(no)
 	if err != nil{
 		rlt := data.NewJson(1, "查询失败:" + err.Error(),nil)
 		fmt.Fprint(res,string(rlt))
 		return
 	}
-	status,_ := strconv.Atoi(v)
-	msg := config.RedisStatus(config.RedisTaskStatus(status))
-	rlt := data.NewJson(0,msg ,nil)
+	//status,_ := strconv.Atoi(v.Status)
+	msg := config.RedisStatus(config.RedisTaskStatus(v.Status))
+	rlt := data.NewJson(0,msg ,v.DownLoad)
 	fmt.Fprint(res,string(rlt))
 	return
 }

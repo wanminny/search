@@ -27,7 +27,8 @@ type ConfigContent struct {
 //tag 注意是redis 非json... 否则会获取不到需要的数据;
 type Job struct {
 	Condition   string `redis:"condition"`
-	Status     int64 `redis:"status"`
+	Status     int `redis:"status"`
+	DownLoad string `redis:"download"`
 }
 
 

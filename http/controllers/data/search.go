@@ -265,21 +265,41 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 
 	// 如果任务存在着不需要再下发了;并显示状态 ？ 或者干脆不管！
 
-	err = redis.LPush(config.RedisTaskName,findCondition)
+	v,err :=redis.HGetAll(findCondition)
 	if err != nil{
-		rlt := data.NewJson(1,"下发任务失败",err.Error())
+		rlt := data.NewJson(1, "查询失败:" + err.Error(),nil)
+		fmt.Fprint(res,string(rlt))
+		return
+	}
+
+	if v.Status == 0 {
+		//不存在的时候才去下发
+		err = redis.LPush(config.RedisTaskName,findCondition)
+		if err != nil{
+			rlt := data.NewJson(1,"下发任务失败",err.Error())
+			res.Write([]byte(string(rlt)))
+			return
+		}
+		task := map[string] interface{} {
+			"status":config.RedisStatusNotStart,
+			"condition":composeStr,
+			"download":"",
+		}
+		redis.HMSet(findCondition,task)
+		msg := fmt.Sprintf("%s,%s",findCondition,"任务下发成功;请去查询接口获取结果文件地址")
+		rlt := data.NewJson(1,msg, struct {}{})
 		res.Write([]byte(string(rlt)))
 		return
 	}
-	task := map[string] interface{} {
-		"status":config.RedisStatusNotStart,
-		"condition":composeStr,
+	//如果存在该条记录
+	if v.Status != int(config.RedisStatusFailure) {
+		msg := config.RedisStatus(config.RedisTaskStatus(v.Status))
+		rlt := data.NewJson(0,msg ,v.DownLoad)
+		fmt.Fprint(res,string(rlt))
+		return
 	}
-	redis.HMSet(findCondition,task)
-	msg := fmt.Sprintf("%s,%s",findCondition,"任务下发成功;请去查询接口获取结果文件地址")
-	rlt := data.NewJson(1,msg, struct {}{})
-	res.Write([]byte(string(rlt)))
-	return
+
+
 }
 
 
