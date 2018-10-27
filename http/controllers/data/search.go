@@ -222,7 +222,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	if err != nil{
 		logrus.Println(err)
 	}
-
 	startTime := pickData.Start
 	endTime := pickData.End
 	condition := pickData.C
@@ -246,7 +245,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 			return
 		}
 	}
-
 	//如果参数合法就判断是否是重复的请求
 	composeStr := fmt.Sprintf("%s-%s-%s-%s",startTime,endTime,condition,dir)
 	findCondition := utils.MD5(composeStr)
@@ -266,7 +264,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	}
 
 	// 如果任务存在着不需要再下发了;并显示状态 ？ 或者干脆不管！
-
 
 	err = redis.LPush(config.RedisTaskName,findCondition)
 	if err != nil{
@@ -309,11 +306,10 @@ func DoWork()  {
 				log.Println(err)
 				continue
 			}
-
 			//status := job.Status
-			condtion := job.Condition
+			RedisCondtion := job.Condition
+			fields := strings.Split(RedisCondtion,config.ConditionSplitChar)
 
-			fields := strings.Split(condtion,config.ConditionSplitChar)
 			//格式化的日志列表slice
 			dirs := make([]string,0)
 			startTime := fields[0]
@@ -338,13 +334,14 @@ func DoWork()  {
 					ts = ts.Add(time.Hour * 24)
 				}
 			}
-			logrus.Println(dirs)
-
 			//findCondition := ""
 			condition := fields[2]
 			dir :=  fields[3]
 			down := search.DownloadDir
 			//获取到所有的值
+
+			log.Println(dirs,dir,down,condition)
+
 			search.DoSearch(dirs,dir,"",condition,down)
 
 			//成功后设置标志位
@@ -354,6 +351,8 @@ func DoWork()  {
 			//rlt := data.NewJson(0,"文件处理中",nil)
 			//res.Write([]byte(rlt))
 		}
+
+		time.Sleep(time.Second)
 
 	}
 

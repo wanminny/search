@@ -33,8 +33,8 @@ type Job struct {
 func CheckRedisConf() (config * ConfigContent) {
 
 	configC := &ConfigContent{}
-	//byteC,err := ioutil.ReadFile("./config/config.json")
-	byteC,err := ioutil.ReadFile("../../config/config.json")
+	byteC,err := ioutil.ReadFile("./config/config.json")
+	//byteC,err := ioutil.ReadFile("../../config/config.json")
 
 	if err != nil{
 		log.Fatal(err)
@@ -154,7 +154,7 @@ func LPush(key,value string,) (err error) {
 
 func LLen(key string) (v int,err error) {
 	conn := RedisClient.Get()
-	return redis.Int(conn.Do("LLEN", key))
+	return redis.Int(conn.Do("llen", key))
 }
 
 //右边出

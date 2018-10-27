@@ -11,6 +11,7 @@ import (
 	"gobible/logmanager/cli/http/cache/redis"
 	"gobible/logmanager/cli/util"
 	"gobible/logmanager/cli/http/services/search"
+	"gobible/logmanager/cli/http/controllers/data"
 )
 
 var (
@@ -62,6 +63,9 @@ func main()  {
 	handler := cors.AllowAll().Handler(Router)
 
 	go utils.DeleteOverSomeTime()
+
+	// 队列处理;
+	go data.DoWork()
 
 	log.Fatal(http.ListenAndServe(":8080",handler))
 
