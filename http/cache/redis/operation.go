@@ -157,7 +157,7 @@ func LPush(key,value string,) (err error) {
 //过期时间
 func Expire(key string,timeout time.Duration) {
 	conn := RedisClient.Get()
-	_, err := conn.Do("EXPIRE", key,timeout)
+	_, err := conn.Do("EXPIRE", key,int64(timeout))
 	if err != nil{
 		logrus.Println(err)
 	}
