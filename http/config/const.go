@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 const (
 
 	//压缩文件生成的结果文件夹
@@ -16,6 +18,10 @@ const (
 
 	//字符串分割符号
 	ConditionSplitChar = "-"
+
+	// hash key 过期设置
+	// 超过就删除文件 注意是秒数
+    OVERTIME  = time.Hour * 24 * 10 / 1e9
 
 )
 

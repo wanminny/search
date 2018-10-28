@@ -286,6 +286,7 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 			"download":"",
 		}
 		redis.HMSet(findCondition,task)
+		redis.Expire(findCondition,config.OVERTIME)
 		msg := fmt.Sprintf("%s,%s",findCondition,"任务下发成功;请去查询接口获取结果文件地址")
 		rlt := data.NewJson(1,msg, struct {}{})
 		res.Write([]byte(string(rlt)))
@@ -294,11 +295,10 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	//如果存在该条记录
 	if v.Status != int(config.RedisStatusFailure) {
 		msg := config.RedisStatus(config.RedisTaskStatus(v.Status))
-		rlt := data.NewJson(0,msg ,v.DownLoad)
+		rlt := data.NewJson(0,findCondition + "," +msg ,v.DownLoad)
 		fmt.Fprint(res,string(rlt))
 		return
 	}
-
 
 }
 
@@ -339,10 +339,12 @@ func DoWork()  {
 			ts, err := time.Parse(search.TIMEFORMAT, startTime)
 			if err != nil {
 				log.Println(err)
+				continue
 			}
 			te, err := time.Parse(search.TIMEFORMAT, endTime)
 			if err != nil {
 				log.Println(err)
+				continue
 			}
 			if ts.Equal(te) { // 日期相等
 				dirs = append(dirs, startTime)
@@ -361,7 +363,7 @@ func DoWork()  {
 			down := search.DownloadDir
 			//获取到所有的值
 
-			log.Println(dirs,dir,down,condition)
+			//log.Println(dirs,dir,down,condition)
 
 			hashKey := v
 
@@ -371,6 +373,7 @@ func DoWork()  {
 				//"condition":composeStr,
 				//"download":"",
 			}
+			//只有第一次设置的时候对过期时间有影响；无需再次设置！
 			redis.HMSet(hashKey,task)
 
 			search.DoSearch(dirs,dir,hashKey,condition,down)

@@ -9,13 +9,9 @@ import (
 	"github.com/qiniu/log"
 )
 
-
-
 var (
 	Test map[string]string = make(map[string]string,2)
-
 )
-
 
 //文件目录服务
 func Content(res http.ResponseWriter,req *http.Request,params httprouter.Params)()  {
