@@ -246,7 +246,8 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 		}
 	}
 	//如果参数合法就判断是否是重复的请求
-	composeStr := fmt.Sprintf("%s-%s-%s-%s",startTime,endTime,condition,dir)
+	timeNoa := time.Now().Nanosecond()
+	composeStr := fmt.Sprintf("%s-%s-%s-%s-%d",startTime,endTime,condition,dir,timeNoa)
 	findCondition := utils.MD5(composeStr)
 
 	//格式化的日志列表slice
@@ -369,7 +370,7 @@ func DoWork()  {
 			redis.HMSet(hashKey,task)
 
 			search.DoSearch(dirs,dir,hashKey,condition,down)
-			
+
 		}
 
 		time.Sleep(time.Second)
