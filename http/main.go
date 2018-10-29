@@ -67,6 +67,7 @@ func main()  {
 
 	log.Println("service start on :8080,ok!")
 
+	//跨域支持！
 	handler := cors.AllowAll().Handler(Router)
 
 	//对接口进行Json化
