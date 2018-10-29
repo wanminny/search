@@ -12,6 +12,7 @@ import (
 	"gobible/logmanager/cli/util"
 	"gobible/logmanager/cli/http/services/search"
 	"gobible/logmanager/cli/http/controllers/data"
+	"gobible/logmanager/cli/http/middleware"
 )
 
 var (
@@ -67,6 +68,9 @@ func main()  {
 	log.Println("service start on :8080,ok!")
 
 	handler := cors.AllowAll().Handler(Router)
+
+	//对接口进行Json化
+	handler = middleware.JsonHeader(handler)
 
 	go utils.DeleteOverSomeTime()
 
