@@ -21,7 +21,6 @@ func DeleteOverSomeTime()  {
 	configFile := redis.CheckRedisConf()
 	configDown := configFile.Down
 	//configDown := "/temp/php-cp"
-
 	for {
 		select {
 			case <- ticker.C:

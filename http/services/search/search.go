@@ -69,11 +69,6 @@ func DoSearch(dirs []string,directory,hashKey,deviceId,ZipResultDir string)  {
 			unsatisfy = append(unsatisfy,k)
 		}
 	}
-
-	//fmt.Printf("%#v",unsatisfy)
-	//fmt.Printf("%#v\n",fileMaps)
-	//os.Exit(1)
-
 	for k,v := range fileMaps{
 		//先处理本地的所有的已知的文件；【包括两种情况 1.是有没有扩展名称的； 2.一种是有扩展名称的】
 		realNameIte := util.GetCurrentDirectory() + "/" + prefix + k

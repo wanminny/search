@@ -200,54 +200,25 @@ func HSet(key,field string,value interface{}) (err error) {
 func HGet(key,field string)  (value string,err error) {
 	conn := RedisClient.Get()
 	return redis.String(conn.Do("hget", key,field))
-	//if err != nil{
-	//	logrus.Println(err)
-	//}
-	//return
-
 }
 
 func HGetAll(key string) (v Job,err error){
 	conn := RedisClient.Get()
 	values, err := redis.Values(conn.Do("HGETALL", key))
-	//for _, v := range values {
-	//	log.Printf("%s", v)
-	//}
-	//for i := 0; i < len(values); i += 2 {
-	//	key, _ := redis.String(values[i], nil)
-	//	value, _ := redis.String(values[i+1], nil)
-	//
-	//	fmt.Printf("  %s: %s\n", key, value)
-	//}
-	//return
-	//return Job{Condition:}
-	///
 	if err != nil {
 		fmt.Println("HGETALL", err)
 	}
-	///千万注意了这里tag是 redis 不是 json
-	//type RQJob struct {
-	//	Condition   string `redis:"condition"`
-	//	Status     int64 `redis:"status"`
-	//}
-
 	var rqjob = Job{}
 	if err := redis.ScanStruct(values, &rqjob); err != nil {
 		fmt.Println(err)
 	}
 	v = rqjob
-	//fmt.Println("rqjob result", rqjob)
 	return
 }
 
 func HMSet(key string,m map[string]interface{}) (err error)  {
 
 	conn := RedisClient.Get()
-	//m := map[string]string{
-	//	"title":  "Example2",
-	//	"author": "Steve",
-	//	"body":   "Map",
-	//}
 	if _, err := conn.Do("HMSET", redis.Args{}.Add(key).AddFlat(m)...); err != nil {
 		panic(err)
 	}

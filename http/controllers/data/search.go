@@ -249,12 +249,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	composeStr := fmt.Sprintf("%s-%s-%s-%s",startTime,endTime,condition,dir)
 	findCondition := utils.MD5(composeStr)
 
-	//if isProcessing(findCondition) {
-	//	rlt := data.NewJson(0,"该查找任务已经提交,正在处理中,请问重复提交,谢谢！",nil)
-	//	res.Write([]byte(rlt))
-	//	return
-	//}
-
 	//格式化的日志列表slice
 	dirs := make([]string,0)
 	//参数校验
@@ -262,8 +256,6 @@ func Pick(res http.ResponseWriter,req *http.Request,params httprouter.Params)  {
 	if err != nil{
 		return
 	}
-
-	// 如果任务存在着不需要再下发了;并显示状态 ？ 或者干脆不管！
 
 	v,err :=redis.HGetAll(findCondition)
 	if err != nil{
@@ -377,13 +369,7 @@ func DoWork()  {
 			redis.HMSet(hashKey,task)
 
 			search.DoSearch(dirs,dir,hashKey,condition,down)
-
-			//成功后设置标志位
-
-			//提交任务后马上设置值
-			//redis.SetValue(findCondition,composeStr)
-			//rlt := data.NewJson(0,"文件处理中",nil)
-			//res.Write([]byte(rlt))
+			
 		}
 
 		time.Sleep(time.Second)

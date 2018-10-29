@@ -73,8 +73,6 @@ func CheckIsRunning(res http.ResponseWriter,req *http.Request,params httprouter.
 		fmt.Fprint(res,string(rlt))
 		return
 	}
-
-	//status,_ := strconv.Atoi(v.Status)
 	msg := config.RedisStatus(config.RedisTaskStatus(v.Status))
 	rlt := data.NewJson(0,msg ,v.DownLoad)
 	fmt.Fprint(res,string(rlt))
