@@ -14,6 +14,7 @@ import (
 const UNAME  = "test"
 const UPASSWD  = "test"
 
+//标准的http 处理器才适用！
 func AuthHeader(next http.Handler) http.Handler{
 	f :=  func(w http.ResponseWriter,req *http.Request) {
 		authH := w.Header().Get("Authentication")
