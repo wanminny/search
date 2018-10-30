@@ -10,6 +10,10 @@ import (
 	"path"
 	"crypto/md5"
 	"encoding/hex"
+	"flag"
+	"time"
+	"runtime"
+	"reflect"
 )
 
 var (
@@ -147,9 +151,54 @@ func testSplit()  {
 	os.Exit(1)
 }
 
+func testflag()  {
+	var name = ""
+	flag.StringVar(&name,"name","1","name usage")
+	flag.Parse()
+
+	log.Println(flag.NArg(),flag.NFlag())
+
+	//io.readF
+	//f,err := os.Open("aaa.txg")
+	//ioutil.ReadAll()
+
+	y,m,d := time.Now().Date()
+	log.Println(y,int(m),d)
+
+	funcName := func() {}
+	func2 := log.Println
+	//time.ParseDuration()
+	//time.
+
+
+	//runtime.
+
+	//runtime.Func{}
+	//获取函数名称:
+	log.Println(runtime.FuncForPC(reflect.ValueOf(funcName).Pointer()).Name())
+	funPc := (runtime.FuncForPC(reflect.ValueOf(func2).Pointer()))
+
+	log.Println(funPc)
+	log.Println(funPc.Entry())
+
+
+	flag.PrintDefaults()
+
+}
+
+func teststd()  {
+
+	//var a FloatType = 1.1
+	//FloatT
+	//fmt.Errorf()
+
+}
+
 func main()  {
+	testflag()
+
 	//demo()
-	testSplit()
+	//testSplit()
 }
 
 func main1()  {

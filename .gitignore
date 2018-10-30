@@ -9,6 +9,7 @@ cli
 *.zip
 *.log
 search_linux
+server_linux
 test/test
 /test/test
 /http/http
