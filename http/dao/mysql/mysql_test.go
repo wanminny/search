@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-//方法
+//方法 的调用与普通函数的调用方式 不同。
 func TestMySQLClient_Init(t *testing.T) {
 
 	config := map[string]map[string]map[string]string{}
