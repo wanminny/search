@@ -13,6 +13,7 @@ import (
 	"gobible/logmanager/cli/http/config"
 	"gobible/logmanager/cli/http/services/search"
 	"sync"
+	"gobible/logmanager/cli/http/controllers/jsonp"
 )
 
 
@@ -70,6 +71,9 @@ func InitRouter(router *httprouter.Router)  {
 
 	//内存 诊断
 	router.GET("/memory",file.Memory)
+
+	router.GET("/jsonp",jsonp.JsonpHandler)
+
 }
 
 func initDir()  {

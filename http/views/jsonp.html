@@ -1,0 +1,30 @@
+
+<!--json 实例 通过页面下发请求给服务器端; -->
+
+<!DOCTYPE html>
+<html>
+<head><title>Go JSONP Server</title></head>
+<body>
+<button id="btn">Click to get HTTP header via JSONP</button>
+<pre id="result"></pre>
+<script>
+    'use strict';
+    var btn = document.getElementById("btn");
+    var result = document.getElementById("result");
+
+    function myCallback(acptlang) {
+        //接受服务器端的返回;在渲染在页面中或者 自己在前端处理自己的业务逻辑！与服务器端呼应！
+        result.innerHTML = JSON.stringify(acptlang, null, 2);
+    }
+
+    function jsonp() {
+        result.innerHTML = "Loading ...";
+        var tag = document.createElement("script");
+        tag.src = "http://localhost:8080/jsonp?callback=myCallback";
+        document.querySelector("head").appendChild(tag);
+    }
+
+    btn.addEventListener("click", jsonp);
+</script>
+</body>
+</html>

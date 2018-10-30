@@ -30,7 +30,6 @@ func NewJson(code int,msg string,data interface{}) string {
 func SetCROS(res http.ResponseWriter)  {
 
 	res.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
-	res.Header().Set("abc", "*")             //允许访问所有域
 	res.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
 	res.Header().Set("content-type", "application/json")             //返回数据格式是json
 }
