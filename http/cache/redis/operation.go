@@ -67,7 +67,7 @@ func InitPool()  {
 			}
 
 			//自由填写了密码才去拨号
-			if len(configC.RedisPassWd) >0 {
+			if len(configC.RedisPassWd) > 0 {
 				if _, err := c.Do("AUTH", configC.RedisPassWd); err != nil {
 					c.Close()
 					logrus.Println(" redis AUTH 异常 :",err)

@@ -12,3 +12,23 @@ redis:
     db: 6
 
 mysql:
+  test:
+    host: 127.0.0.1
+    port: 3306
+    username: root
+    password: 123456
+    database: api
+    maxIdle: 100
+    maxOpen: 100
+
+  product:
+    host: 127.0.0.1
+    port: 3306
+    username: root
+    password: 123456
+    database: api
+    maxIdle: 100
+    maxOpen: 100
+
+
+
