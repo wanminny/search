@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-
+//the way to go
 func ZipDir(source, target string) error {
 
 	zipfile, err := os.Create(target)
