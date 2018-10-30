@@ -14,6 +14,7 @@ import (
 	"gobible/logmanager/cli/http/services/search"
 	"sync"
 	"gobible/logmanager/cli/http/controllers/jsonp"
+	"gobible/logmanager/cli/http/middleware"
 )
 
 
@@ -73,6 +74,9 @@ func InitRouter(router *httprouter.Router)  {
 	router.GET("/memory",file.Memory)
 
 	router.GET("/jsonp",jsonp.JsonpHandler)
+
+	//某个函数处理 auth
+	router.GET("/auth",middleware.AuthHeaderWithHttpRouter(file.Content))
 
 }
 
