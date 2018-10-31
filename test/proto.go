@@ -14,7 +14,7 @@ import (
 type Package struct {
 	Version        [2]byte // 协议版本       //  固定2个字节
 	//Length         int16   // 数据部分长度    // 固定的2个字节 ;可以表示 2^16=32k长度 一般足够用了;不够可以使用四个字节
-	Length         int32   // 数据部分长度    // 固定的2个字节 ;可以表示 2^16=32k长度 一般足够用了;不够可以使用四个字节
+	Length         int32   // 数据部分长度    // 固定的4个字节 ;可以表示 2^32=4g 长度 足够用了！
 
 
 	// 以下是变长; payload!  (8+ 2+len(Hostname) + 2+len(TagLength) + len(Msg))  ===  Length字段的实际的值！
