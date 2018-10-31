@@ -21,8 +21,7 @@ const (
 
 	// hash key 过期设置
 	// 超过就删除文件 注意是秒数
-    OVERTIME  = time.Hour * 24 * 10 / 1e9
-
+	OVERTIME = time.Hour * 24 * 10 / 1e9
 )
 
 type RedisTaskStatus int

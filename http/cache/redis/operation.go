@@ -89,13 +89,16 @@ func init()  {
 }
 
 
-func PING(){
+func PING() (err error) {
 	//获取值
 	conn := RedisClient.Get()
-	_,err := redis.String(conn.Do("PING"))
+	_,err = redis.String(conn.Do("PING"))
 	if err != nil{
-		log.Fatal(err)
+		//log.Fatal(err)
+		panic(err)
+
 	}
+	return
 }
 
 //获取值

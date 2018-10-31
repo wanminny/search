@@ -304,6 +304,7 @@ func DoWork()  {
 		listLen,err := redis.LLen(config.RedisTaskName)
 		if err != nil{
 			log.Println(err)
+			time.Sleep(time.Second)
 			continue
 		}
 		if listLen > 0 {

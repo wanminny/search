@@ -13,6 +13,7 @@ import (
 	"gobible/logmanager/cli/http/services/search"
 	"gobible/logmanager/cli/http/controllers/data"
 	"gobible/logmanager/cli/http/middleware"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -54,6 +55,16 @@ func initConfigJson()  {
 }
 
 func main()  {
+
+	//catch 全局异常 ？
+	//excepiton.Finally()
+
+	defer func() {
+		if err := recover(); err != nil{
+			log.Println("异常 :",err)
+			logrus.Println(err)
+		}
+	}()
 
 	initEnv()
 

@@ -15,6 +15,7 @@ import (
 	"sync"
 	"gobible/logmanager/cli/http/controllers/jsonp"
 	"gobible/logmanager/cli/http/middleware"
+	"log"
 )
 
 
@@ -107,7 +108,7 @@ func initDir()  {
 
 }
 
-func InitLog()  {
+func InitLog() (err error)  {
 
 	f, _ := os.OpenFile(util.GetCurrentDirectory() + "/" + config.ServerLogDir + "/"+"server.log", os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_APPEND,0755)
 
@@ -117,6 +118,11 @@ func InitLog()  {
 	initDir()
 
 	//读取配置并 检查是否可以连上redis服务器
-	redis.PING()
+	err = redis.PING()
+	if err != nil{
+		log.Println(err)
+		panic(err)
+	}
+	return
 
 }
