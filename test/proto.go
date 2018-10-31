@@ -94,8 +94,6 @@ func main() {
 	// 写入四次，模拟TCP粘包效果
 	pack.Pack(buf)
 	pack.Pack(buf)
-	pack.Pack(buf)
-	pack.Pack(buf)
 	// scanner
 	scanner := bufio.NewScanner(buf)
 	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
