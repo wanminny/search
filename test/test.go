@@ -17,7 +17,6 @@ import (
 	"net/http"
 	"strconv"
 	"encoding/json"
-	"net/http/httptest"
 )
 
 var (
@@ -190,6 +189,12 @@ func testflag()  {
 
 }
 
+func init() {
+	log.SetFlags(log.Llongfile | log.Ltime)
+}
+
+
+
 func teststd()  {
 
 	//var a FloatType = 1.1
@@ -230,8 +235,17 @@ func h(w http.ResponseWriter,r *http.Request)  {
 	nby,_ := json.MarshalIndent(a,"","\t")
 	log.Println(string(nby))
 
-	httptest.NewRecorder()
+	//httptest.NewRecorder()
 	//httptest.NewRequest()
+
+	scanner := bufio.NewScanner(os.Stdin)
+
+	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
+
+		return
+	})
+
+	log.Println(os.Hostname())
 }
 
 func main1()  {
