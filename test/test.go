@@ -14,6 +14,10 @@ import (
 	"time"
 	"runtime"
 	"reflect"
+	"net/http"
+	"strconv"
+	"encoding/json"
+	"net/http/httptest"
 )
 
 var (
@@ -194,11 +198,40 @@ func teststd()  {
 
 }
 
-func main()  {
-	testflag()
+func testParseInt()  {
+	i, err := strconv.ParseInt("123", 8, 0)
+	if err != nil {
+		panic(err)
+	}
+	println(i)
 
+}
+func main()  {
+
+	h(nil,nil)
+	//testParseInt()
+
+	//testflag()
 	//demo()
 	//testSplit()
+}
+
+func h(w http.ResponseWriter,r *http.Request)  {
+	//r.Cookies()
+	//r.Cookie("")
+	//http.SetCookie(w,c)
+	//strconv.Itoa()
+	//strconv.Atoi()
+	//strconv.ParseInt()
+	a := struct{
+		A string
+		D string
+	}{A:"ASdf",D:"wwwagagmmm"}
+	nby,_ := json.MarshalIndent(a,"","\t")
+	log.Println(string(nby))
+
+	httptest.NewRecorder()
+	//httptest.NewRequest()
 }
 
 func main1()  {

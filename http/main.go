@@ -63,6 +63,7 @@ func main()  {
 		if err := recover(); err != nil{
 			log.Println("异常 :",err)
 			logrus.Println(err)
+			//http.Error()
 		}
 	}()
 

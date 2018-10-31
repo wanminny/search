@@ -7,6 +7,9 @@ import (
 	"log"
 )
 
+func init()  {
+	log.SetFlags(log.Llongfile | log.Ltime)
+}
 //方法 的调用与普通函数的调用方式 不同。
 func TestMySQLClient_Init(t *testing.T) {
 
@@ -79,6 +82,9 @@ func TestMySQLClient_Init(t *testing.T) {
 	var ord int
 
 
+	//或者使用结构体方式 要方便一些 但是要先定义结构体！
+
+
 	log.Println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
 	//必须所有的字段写全才可以！！
@@ -88,5 +94,7 @@ func TestMySQLClient_Init(t *testing.T) {
 		break
 	}
 
+
+	mysqlC.Pool.Prepare("")
 	//log.Printf("%#v",rows)
 }
