@@ -2,9 +2,16 @@ package main
 
 import (
 	"log"
+	"os"
 )
 
 func init()  {
+
+	f,err := os.OpenFile("log.txt",os.O_CREATE | os.O_RDWR | os.O_APPEND,0644)
+	if err != nil{
+		log.Println(err)
+	}
+	log.SetOutput(f)
 	log.SetPrefix("Trace: ")
 	//log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
 	log.SetFlags(log.Llongfile )
@@ -24,6 +31,6 @@ func main()  {
 	//log.Printf()
 	//fmt.Fprintf()
 	//log.Fatal("fatal o ooo ")
-	log.Panicln("ooo panic")
+	//log.Panicln("ooo panic")
 	log.Println("end")
 }
