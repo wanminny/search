@@ -16,6 +16,7 @@ import (
 	"gobible/logmanager/cli/http/controllers/jsonp"
 	"gobible/logmanager/cli/http/middleware"
 	"log"
+	"expvar"
 )
 
 
@@ -78,6 +79,13 @@ func InitRouter(router *httprouter.Router)  {
 
 	//某个函数处理 auth
 	router.GET("/auth",middleware.AuthHeaderWithHttpRouter(file.Content))
+
+	// 这样使用不管用;并没有并自定义的router 或者是mux 接管；
+	//http.Handle("/stat",expvar.Handler())
+
+	// http://localhost:8080/stat [使用的默认的 expvar ]
+	// not http://localhost:8080/debug/vars
+	router.GET("/stat",middleware.ExpVarHeader1(expvar.Handler()))
 
 }
 
