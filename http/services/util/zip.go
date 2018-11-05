@@ -59,6 +59,7 @@ func ZipDir(source, target string) error {
 		} else {
 			header.Method = zip.Deflate
 		}
+		//info.ModTime() //may be  更加准确 而不是当前的时间！？
 		header.Modified = time.Now()  //默认时间是不对的; 需要这样处理
 		writer, err := archive.CreateHeader(header)
 		if err != nil {

@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"testing"
+	"log"
 )
 
 
@@ -58,7 +60,10 @@ func TestGet(t *testing.T) {
 		ts := httptest.NewServer(testGetHandler{tv.Json, tv.HttpError, tv.HttpCode})
 		defer ts.Close()
 
+		log.Println(ts.URL)
 		hm, err := Get(ts.URL)
+
+		log.Println(hm)
 		if err != nil && err.Error() != tv.RetErr {
 			t.Fatal("Wrong error result! Expected:", tv.RetErr, "Got:", err)
 		}

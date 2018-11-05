@@ -6,6 +6,11 @@ func init()  {
 	log.SetFlags(log.Llongfile | log.Ltime)
 }
 
+func test()  {
+	(*struct{ error }).Error(nil)
+}
+
+
 //
 func SliceCopyImplement1(destSlice []string, srcSlice []string)  {
 
