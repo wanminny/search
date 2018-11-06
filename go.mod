@@ -1,1 +1,0 @@
-module gobible/logmanager/cli
