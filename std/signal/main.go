@@ -2,16 +2,22 @@ package main
 
 import (
 	"os"
-	"golang.org/x/debug/server"
 	"os/signal"
 	"syscall"
 	"time"
-	"github.com/influxdata/influxdb/logger"
+
+	logger "gobible/logmanager/cli/std/signal/log"
+	"gobible/logmanager/cli/std/signal/server"
+
 )
+
+//
+//SIGTERM: 优雅地停止进程
+//
+//SIGHUP: 重启/重新加载进程 (例如: nginx, sshd, apache)
 
 func main() {
 	log := logger.New("Server")
-
 	var s *server.Server
 	var err error
 	if os.Getenv("_GRACEFUL_RESTART") == "true" {
