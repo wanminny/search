@@ -7,7 +7,9 @@ import (
 
 // Client holds info about connection
 type Client struct {
+	listener net.Listener
 	conn   net.Conn
+	//tcpAddr net.TCPAddr
 	Server *server
 }
 
