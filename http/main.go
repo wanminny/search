@@ -13,7 +13,7 @@ import (
 	"gobible/logmanager/cli/http/utils"
 	"gobible/logmanager/cli/util"
 	"log"
-	"net/http"
+	"github.com/astaxie/beego/grace"
 )
 
 var (
@@ -90,6 +90,9 @@ func main() {
 	// 队列处理;
 	go data.DoWork()
 
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	//gracehttp.Serve()
+	log.Fatal(grace.ListenAndServe(":8080", handler))
+
+	//log.Fatal(http.ListenAndServe(":8080", handler))
 
 }
