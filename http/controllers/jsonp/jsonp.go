@@ -1,14 +1,14 @@
 package jsonp
 
 import (
-	"net/http"
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
 
 //纯粹的显示页面 没有演示作用；需要通过html页面来处理; [没有用处]
-func Jpage(w http.ResponseWriter, r *http.Request,params httprouter.Params)  {
+func Jpage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	const indexHtml = `<!DOCTYPE html>
 <html>
 <head><title>Go JSONP Server</title></head>
@@ -41,9 +41,8 @@ btn.addEventListener("click", jsonp);
 	return
 }
 
-
 // jsonp
-func JsonpHandler(w http.ResponseWriter, r *http.Request,params httprouter.Params) {
+func JsonpHandler(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	callbackName := r.URL.Query().Get("callback")
 	if callbackName == "" {
 		fmt.Fprintf(w, "Please give callback name in query string")

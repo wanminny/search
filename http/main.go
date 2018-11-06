@@ -1,38 +1,38 @@
 package main
 
 import (
-	"net/http"
-	"log"
-	"gobible/logmanager/cli/http/controllers"
+	"flag"
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
-	"gobible/logmanager/cli/http/utils"
-	"flag"
+	"github.com/sirupsen/logrus"
 	"gobible/logmanager/cli/http/cache/redis"
-	"gobible/logmanager/cli/util"
-	"gobible/logmanager/cli/http/services/search"
+	"gobible/logmanager/cli/http/controllers"
 	"gobible/logmanager/cli/http/controllers/data"
 	"gobible/logmanager/cli/http/middleware"
-	"github.com/sirupsen/logrus"
+	"gobible/logmanager/cli/http/services/search"
+	"gobible/logmanager/cli/http/utils"
+	"gobible/logmanager/cli/util"
+	"log"
+	"net/http"
 )
 
 var (
-	Router  *httprouter.Router
-	Port string
+	Router *httprouter.Router
+	Port   string
 )
 
-func GetGlobalRouter() *httprouter.Router  {
+func GetGlobalRouter() *httprouter.Router {
 	Router = httprouter.New()
 	return Router
 }
 
 //自定义端口
-func initEnv()  {
-	flag.StringVar(&Port,"port",":8080","server port .")
+func initEnv() {
+	flag.StringVar(&Port, "port", ":8080", "server port .")
 	flag.Parse()
 }
 
-func initConfigJson()  {
+func initConfigJson() {
 	configFile := redis.CheckRedisConf()
 	configDown := configFile.Down
 	downDomain := configFile.DownDomain
@@ -41,7 +41,7 @@ func initConfigJson()  {
 	}
 	down := configDown
 	if len(down) > 0 {
-		if !util.PathExist(down){
+		if !util.PathExist(down) {
 			log.Fatal("config.json down 中的下载目录不存在")
 		}
 	}
@@ -54,14 +54,14 @@ func initConfigJson()  {
 	search.DownLoadDomain = downDomain
 }
 
-func main()  {
+func main() {
 
 	//catch 全局异常 ？
 	//excepiton.Finally()
 
 	defer func() {
-		if err := recover(); err != nil{
-			log.Println("异常 :",err)
+		if err := recover(); err != nil {
+			log.Println("异常 :", err)
 			logrus.Println(err)
 			//http.Error()
 		}
@@ -90,6 +90,6 @@ func main()  {
 	// 队列处理;
 	go data.DoWork()
 
-	log.Fatal(http.ListenAndServe(":8080",handler))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 
 }

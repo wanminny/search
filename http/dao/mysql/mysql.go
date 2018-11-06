@@ -3,24 +3,24 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"net/url"
-	"log"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
+	"net/url"
 	"strconv"
 )
 
 type MySQLClient struct {
-	Host    string `json:"host"`
-	MaxIdle string `json:"max_idle"`
-	MaxOpen string `json:"max_open"`
-	User    string `json:"username"`
-	Pwd     string `json:"password"`
-	DB      string `json:"database"`
-	Port    string `json:"port"`
+	Host    string  `json:"host"`
+	MaxIdle string  `json:"max_idle"`
+	MaxOpen string  `json:"max_open"`
+	User    string  `json:"username"`
+	Pwd     string  `json:"password"`
+	DB      string  `json:"database"`
+	Port    string  `json:"port"`
 	Pool    *sql.DB `json:"pool"`
 }
 
-func  (mc *MySQLClient)Init() (err error) {
+func (mc *MySQLClient) Init() (err error) {
 
 	// 构建 DSN 时尤其注意 loc 和 parseTime 正确设置
 	// 东八区，允许解析时间字段
@@ -46,11 +46,10 @@ func  (mc *MySQLClient)Init() (err error) {
 	}
 
 	// 设置最大连接数，一定要设置 MaxOpen
-	maxIdle,_ := strconv.Atoi(mc.MaxIdle)
-	maxOpen,_ := strconv.Atoi(mc.MaxOpen)
+	maxIdle, _ := strconv.Atoi(mc.MaxIdle)
+	maxOpen, _ := strconv.Atoi(mc.MaxOpen)
 
 	mc.Pool.SetMaxIdleConns(maxIdle)
 	mc.Pool.SetMaxOpenConns(maxOpen)
 	return nil
 }
-
