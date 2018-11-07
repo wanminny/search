@@ -28,7 +28,7 @@ func GetGlobalRouter() *httprouter.Router {
 
 //自定义端口
 func initEnv() {
-	flag.StringVar(&Port, "port", ":8080", "server port .")
+	flag.StringVar(&Port, "port", ":8080", "server port :6000")
 	flag.Parse()
 }
 
@@ -77,7 +77,7 @@ func main() {
 
 	controllers.InitLog()
 
-	log.Println("service start on :8080,ok!")
+	log.Printf("service start on %s,ok!",Port)
 
 	//跨域支持！
 	handler := cors.AllowAll().Handler(Router)
@@ -93,6 +93,40 @@ func main() {
 	//gracehttp.Serve()
 	//log.Fatal(grace.ListenAndServe(":8080", handler))
 
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	if len(Port) == 0{
+		Port =":8080"
+	}else{
+		//Port = ":"+Port
+	}
+
+	//方法一
+	log.Fatal(http.ListenAndServe(Port, handler))
+
+	// 实际上就是替换MUX的过程！ 【默认 	http.DefaultServeMux or 自定义的mux 】
+	// 方法二
+	// log.Fatal(http.ListenAndServe(Port,Router))
+
+
+	//  方法三 （另外一种使用方法 : 自定义 server）
+	//server := http.Server{
+	//	Addr:Port,
+	//	Handler:handler,
+	//	ErrorLog:log.New(os.Stdout,"my-server",log.LstdFlags),
+	//	ReadTimeout: 5 *time.Second,
+	//	WriteTimeout:10 *time.Second,
+	//	IdleTimeout:15 * time.Second,
+	//}
+	//
+	//log.Fatal(server.ListenAndServe())
+
+
+
+	// 方法四
+	//或者 这样处理
+	//listener, err := net.Listen("tcp",Port)
+	//if err != nil{
+	//	log.Fatal(err)
+	//}
+	//log.Fatal(server.Serve(listener))
 
 }
